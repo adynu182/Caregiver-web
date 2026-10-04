@@ -15,15 +15,15 @@ service cloud.firestore { match /databases/{d}/documents {
 -->
 <script>try{var t=localStorage.cg_theme;if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
-:root{color-scheme:light;--sbad:#c62f2f;--sok:#1a7f4e;--bg:#f2f6f5;--card:#fff;--ink:#12302f;--mut:#5f7a78;--line:#d3e0de;--ok:#23895c;--okb:#dff3e9;--bad:#cf3a32;--badb:#fde4e1;--pri:#0f5c59;--onp:#fff}
-:root[data-theme=dark]{color-scheme:dark;--bg:#0e1a19;--card:#162726;--ink:#e6f2f0;--mut:#93b3b0;--line:#2a4442;--ok:#4cc58d;--okb:#143a2b;--bad:#ff8077;--badb:#4a1f1c;--pri:#5fd0c9;--onp:#07201f}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#0e1a19;--card:#162726;--ink:#e6f2f0;--mut:#93b3b0;--line:#2a4442;--ok:#4cc58d;--okb:#143a2b;--bad:#ff8077;--badb:#4a1f1c;--pri:#5fd0c9;--onp:#07201f}}
+:root{color-scheme:light;--sbad:#c62f2f;--sok:#1a7f4e;--swarn:#f2c40f;--onwarn:#2a2100;--warn:#8a5d00;--bg:#f2f6f5;--card:#fff;--ink:#12302f;--mut:#5f7a78;--line:#d3e0de;--ok:#23895c;--okb:#dff3e9;--bad:#cf3a32;--badb:#fde4e1;--pri:#0f5c59;--onp:#fff}
+:root[data-theme=dark]{color-scheme:dark;--warn:#f5cf47;--bg:#0e1a19;--card:#162726;--ink:#e6f2f0;--mut:#93b3b0;--line:#2a4442;--ok:#4cc58d;--okb:#143a2b;--bad:#ff8077;--badb:#4a1f1c;--pri:#5fd0c9;--onp:#07201f}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--warn:#f5cf47;--bg:#0e1a19;--card:#162726;--ink:#e6f2f0;--mut:#93b3b0;--line:#2a4442;--ok:#4cc58d;--okb:#143a2b;--bad:#ff8077;--badb:#4a1f1c;--pri:#5fd0c9;--onp:#07201f}}
 *{box-sizing:border-box;margin:0}[hidden]{display:none!important}
 body{font:15px/1.4 Figtree,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
 #app{max-width:480px;margin:auto}
 button,input,select{font:inherit;color:inherit}button{cursor:pointer}
 :focus-visible{outline:3px solid var(--pri);outline-offset:2px}
-.mut{color:var(--mut)}.bad{color:var(--bad)}.ok{color:var(--ok)}
+.mut{color:var(--mut)}.bad{color:var(--bad)}.ok{color:var(--ok)}.warn{color:var(--warn)}
 header{padding:calc(14px + env(safe-area-inset-top)) 16px 8px}
 .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mut)}
 .top{gap:8px}#pt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#who{max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.top>span:last-child{display:flex;gap:6px;flex:none}
@@ -83,17 +83,21 @@ dialog input,dialog select{display:block;width:100%;margin-top:4px;padding:10px;
 .row time{width:50px;color:inherit;opacity:.9}
 .row.f{background:var(--sok);color:#fff}
 .row.e{background:var(--sbad);color:#fff}
+.row.w{background:var(--swarn);color:var(--onwarn)}
 .row.past{background:var(--line);color:var(--mut);opacity:1}
 .row.f button{background:#fff;color:var(--sok);border:0;padding:5px 12px;font-size:14px;font-weight:700}
+.row.w button{color:var(--onwarn)}
 .row.e .pill{background:#fff;color:var(--sbad);border-radius:99px;padding:4px 14px;font-size:14px;font-weight:700}
 .dt{width:78px;gap:3px;padding:10px 6px}
 .dt.e{background:var(--sbad);border-color:var(--sbad);color:#fff}
 .dt.f{background:var(--sok);border-color:var(--sok);color:#fff}
+.dt.w{background:var(--swarn);border-color:var(--swarn);color:var(--onwarn)}
 .dt.p{color:var(--mut)}
 .dt small{color:inherit}.dt.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--bg),0 0 0 5px var(--ink)}
 .pl{font-size:12px;font-weight:700}
-.pb{height:14px;border-radius:99px;background:var(--sbad);overflow:hidden;margin:8px 0 6px}
-.pb i{display:block;height:100%;background:var(--sok)}
+.pb{display:flex;height:14px;border-radius:99px;background:var(--sbad);overflow:hidden;margin:8px 0 6px}
+.pb i{display:block;flex:none;height:100%;background:var(--sok)}
+.pb i.w{background:var(--swarn)}
 .leg{font-size:14px}.leg i{width:16px;height:16px;border-radius:4px}
 .gap{border-left:8px solid var(--sbad)}
 .row small{display:block;font-size:12px;font-weight:400;opacity:.9}
@@ -105,7 +109,7 @@ dialog input,dialog select{display:block;width:100%;margin-top:4px;padding:10px;
 .cc{width:100%;min-height:66px;background:var(--card);border:1px solid var(--line);border-bottom:4px solid var(--line);border-radius:10px;padding:4px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left}
 .cc b{font-size:12px;border-radius:99px;padding:0 5px}
 .cc.t b{background:var(--ink);color:var(--bg)}
-.cc.p{opacity:.55}.cc.e{border-bottom-color:var(--sbad)}.cc.f{border-bottom-color:var(--sok)}
+.cc.p{opacity:.55}.cc.e{border-bottom-color:var(--sbad)}.cc.f{border-bottom-color:var(--sok)}.cc.w{border-bottom-color:var(--swarn)}
 .cc.on{opacity:1;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink)}
 .dots{display:flex;flex-wrap:wrap;gap:3px}.dots i{width:11px;height:11px;border-radius:50%}.dots em{font-size:11px;font-style:normal;color:var(--mut)}
 .cg,.wr{display:flex;align-items:center;gap:12px}
@@ -124,10 +128,10 @@ dialog input,dialog select{display:block;width:100%;margin-top:4px;padding:10px;
   <button class="wa" id="wa">Bagikan jam kosong ke grup WhatsApp</button>
  </header>
  <div id="setup" hidden>Database belum terhubung. Isi <b>firebaseConfig</b> di bagian script, lalu buka lewat Firebase Hosting atau server lokal (bukan file://).</div>
- <div class="leg"><span><i style="background:var(--sbad)"></i>Merah: belum ada penjaga</span><span><i style="background:var(--sok)"></i>Hijau: sudah ada penjaga</span><span><i style="background:var(--line)"></i>Abu-abu: sudah lewat</span></div>
- <p class="hint">Geser untuk memilih tanggal. Tulisan di tiap tanggal menunjukkan berapa jam yang masih kosong.</p>
+ <div class="leg"><span><i style="background:var(--sbad)"></i>Merah: belum ada penjaga</span><span><i style="background:var(--swarn)"></i>Kuning: baru 1 penjaga</span><span><i style="background:var(--sok)"></i>Hijau: lebih dari 1 penjaga</span><span><i style="background:var(--line)"></i>Abu-abu: sudah lewat</span></div>
+ <p class="hint">Geser untuk memilih tanggal. Tulisan di tiap tanggal menunjukkan berapa jam yang masih kosong (merah) atau baru dijaga 1 orang (kuning).</p>
  <div id="strip" aria-label="Pilih tanggal"></div>
- <section><h2 id="dh"></h2><p class="mut" style="margin-bottom:8px">Ketuk kotak merah untuk mengambil jam itu. Ketuk Ikut jaga untuk menemani penjaga lain.</p><div id="tl"></div>
+ <section><h2 id="dh"></h2><p class="mut" style="margin-bottom:8px">Ketuk kotak merah untuk mengambil jam itu. Ketuk Ikut jaga untuk menemani penjaga lain, terutama di kotak kuning.</p><div id="tl"></div>
  <h2>Jam yang masih kosong</h2><p class="mut" style="margin-bottom:8px">Yang paling dekat waktunya ada di atas. Ketuk Ambil untuk mengisi.</p><div id="gaps"></div></section>
  <div class="fabw"><button class="fab" id="fab">+ Ambil jadwal</button></div>
 </main>
@@ -139,7 +143,7 @@ dialog input,dialog select{display:block;width:100%;margin-top:4px;padding:10px;
  <h1>Tim caregiver</h1>
  <h2>Semua caregiver <span id="cgn" class="mut"></span></h2><div id="chips"></div>
  <h2>Kalender jaga</h2>
- <p class="mut" style="margin-bottom:8px">Garis bawah merah berarti masih ada jam kosong, hijau berarti semua jam terisi. Ketuk tanggal untuk melihat siapa saja dan jamnya.</p>
+ <p class="mut" style="margin-bottom:8px">Garis bawah merah berarti masih ada jam kosong, kuning berarti ada jam yang baru dijaga 1 orang, hijau berarti semua jam dijaga lebih dari 1 orang. Ketuk tanggal untuk melihat siapa saja dan jamnya.</p>
  <div class="cal" id="cal"></div><div id="dd"></div>
  <h2>Rincian caregiver</h2><div id="cgl"></div>
 </main>
@@ -159,9 +163,9 @@ dialog input,dialog select{display:block;width:100%;margin-top:4px;padding:10px;
 <dialog id="gd"><h1>Cara pakai</h1>
  <p class="mut">Tujuan kita sama: setiap jam, siang dan malam, ada yang menjaga mamah.</p>
  <div class="st"><b>1</b><div><h3>Pilih nama Anda</h3><p>Pilih nama Anda dari daftar, lalu ketuk Mulai. Cukup sekali, nama diingat di HP ini. Untuk ganti nama, ketuk tombol nama di pojok kanan atas.</p></div></div>
- <div class="st"><b>2</b><div><h3>Cari kotak merah</h3><p>Merah artinya jam itu belum ada yang menjaga. Hijau artinya sudah ada penjaga. Geser tanggal di atas untuk melihat hari lain.</p></div></div>
- <div class="st"><b>3</b><div><h3>Ambil jam yang kosong</h3><p>Ketuk kotak merah, atau tombol "+ Ambil jadwal" di kanan bawah. Atur tanggal dan jam, lalu ketuk Simpan jadwal. Kotaknya berubah hijau dan memuat nama Anda. Satu jam boleh dijaga lebih dari satu orang: ketuk Ikut jaga pada kotak hijau untuk menemani penjaga lain.</p></div></div>
- <div class="st"><b>4</b><div><h3>Tidak jadi bisa jaga?</h3><p>Cari jadwal Anda yang hijau, lalu ketuk Batalkan. Setelah itu ketuk "Bagikan jam kosong ke grup WhatsApp" agar ada yang menggantikan.</p></div></div>
+ <div class="st"><b>2</b><div><h3>Cari kotak merah</h3><p>Merah artinya jam itu belum ada yang menjaga. Kuning artinya baru 1 penjaga. Hijau artinya lebih dari 1 penjaga. Geser tanggal di atas untuk melihat hari lain.</p></div></div>
+ <div class="st"><b>3</b><div><h3>Ambil jam yang kosong</h3><p>Ketuk kotak merah, atau tombol "+ Ambil jadwal" di kanan bawah. Atur tanggal dan jam, lalu ketuk Simpan jadwal. Kotaknya berubah kuning dan memuat nama Anda. Satu jam boleh dijaga lebih dari satu orang: ketuk Ikut jaga pada kotak kuning untuk menemani penjaga lain. Kotak kuning berubah hijau setelah ada penjaga kedua.</p></div></div>
+ <div class="st"><b>4</b><div><h3>Tidak jadi bisa jaga?</h3><p>Cari jadwal Anda (kotak kuning atau hijau yang ada nama Anda), lalu ketuk Batalkan. Setelah itu ketuk "Bagikan jam kosong ke grup WhatsApp" agar ada yang menggantikan.</p></div></div>
  <div class="st"><b>5</b><div><h3>Mau bicara dengan penjaga lain?</h3><p>Buka tab Chat di bagian bawah layar. Semua penjaga bisa membaca pesan Anda, cocok untuk kabar obat, kondisi mamah, atau tukar jaga.</p></div></div>
  <div class="st"><b>6</b><div><h3>Lihat siapa yang jaga</h3><p>Buka tab Tim di bagian bawah layar. Setiap caregiver punya warna sendiri di tab ini, Titik warna di kalender menunjukkan siapa yang jaga di tanggal itu. Ketuk tanggal untuk melihat jamnya.</p></div></div>
  <div class="tipb"><b>Contoh jaga malam</b><br>Jaga dari jam 22.00 sampai jam 06.00 pagi: pilih Mulai 22.00 dan Selesai 06.00. Jaga otomatis lanjut ke hari berikutnya.</div>
@@ -204,20 +208,23 @@ else db=getFirestore(initializeApp(firebaseConfig));
 function toast(t){const e=$("#toast");e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,3500)}
 function need(){if(!db){toast("Isi firebaseConfig dulu");return false}if(!me){$("#nm").showModal();return false}return true}
 
+const cnt=t=>new Set((slots.get(t)||[]).map(x=>key(x.name))).size; // jumlah penjaga berbeda di jam t
 function gaps(){const g=[],n=now();let c=null;
  for(let t=n;t<n+14*D;t+=H){if(slots.has(t))c=null;else if(c)c.end=t+H;else{c={start:t,end:t+H};g.push(c)}}return g}
 
 function render(){
  slots=new Map();shifts.forEach(s=>{for(let t=s.start;t<s.end;t+=H)slots.set(t,[...(slots.get(t)||[]),s])});
- const n=now(),g=gp=gaps(),empty=g.reduce((a,x)=>a+(x.end-x.start)/H,0),pct=Math.round((1-empty/(14*24))*100);
+ const n=now(),g=gp=gaps(),empty=g.reduce((a,x)=>a+(x.end-x.start)/H,0),tot=14*24,pct=Math.round((1-empty/tot)*100);
+ let one=0;for(let t=n;t<n+14*D;t+=H)if(cnt(t)==1)one++;
+ const bar=`<div class="pb"><i style="width:${(tot-empty-one)/tot*100}%"></i><i class="w" style="width:${one/tot*100}%"></i></div>`;
  $("#pt").textContent=PASIEN;$("#who").textContent=me||"Pilih nama";
- $("#sum").innerHTML=empty?`<b class="bad">${empty} jam belum ada penjaga</b><div class="pb"><i style="width:${pct}%"></i></div><span>${pct}% terisi untuk 14 hari ke depan. Hijau sudah ada penjaga, merah masih kosong.</span>`
-  :`<b class="ok">Semua jam terisi</b><div class="pb"><i style="width:100%"></i></div><span>14 hari ke depan aman</span>`;
- $("#strip").innerHTML=days.map((d,i)=>{let e=0,u=0;for(let k=0;k<24;k++){const t=d+k*H;if(t>=n){u++;if(!slots.has(t))e++}}const st=!u?"p":e?"e":"f";
-  return `<button class="dt ${st}${i==sel?" on":""}" data-i="${i}"><small>${new Date(d).toLocaleDateString("id-ID",{weekday:"short"})}</small><b>${new Date(d).getDate()}</b><span class="pl">${st=="p"?"Lewat":e?e+" kosong":"Penuh ✓"}</span></button>`}).join("");
+ $("#sum").innerHTML=empty?`<b class="bad">${empty} jam belum ada penjaga</b>${bar}<span>${pct}% terisi untuk 14 hari ke depan. Hijau lebih dari 1 penjaga, kuning baru 1 penjaga, merah masih kosong.</span>`
+  :`<b class="ok">Semua jam terisi</b>${bar}<span>14 hari ke depan aman${one?`, ${one} jam di antaranya baru dijaga 1 orang`:""}</span>`;
+ $("#strip").innerHTML=days.map((d,i)=>{const{e,u,y}=dst(d,n),st=!u?"p":e?"e":y?"w":"f";
+  return `<button class="dt ${st}${i==sel?" on":""}" data-i="${i}"><small>${new Date(d).toLocaleDateString("id-ID",{weekday:"short"})}</small><b>${new Date(d).getDate()}</b><span class="pl">${st=="p"?"Lewat":e?e+" kosong":y?y+" sendiri":"Penuh ✓"}</span></button>`}).join("");
  const d=days[sel];$("#dh").textContent=dl(d);let h="";
- for(let k=0;k<24;k++){const t=d+k*H,s=slots.get(t),past=t<n,my=s&&s.find(x=>x.name===me);
-  h+=s?`<div class="row f${past?" past":""}"><time>${tm(t)}</time><div><span><b>${past?"":"✓ "}${s.map(x=>esc(x.name)+(x.name===me?" (Anda)":"")).join(", ")}</b>${s.length>1?`<small>${s.length} orang jaga bersama</small>`:""}</span>${past?"":my?`<button data-del="${my.id}">Batalkan</button>`:`<button data-join="${t}">Ikut jaga</button>`}</div></div>`
+ for(let k=0;k<24;k++){const t=d+k*H,s=slots.get(t),c=cnt(t),past=t<n,my=s&&s.find(x=>x.name===me);
+  h+=s?`<div class="row f${c<2?" w":""}${past?" past":""}"><time>${tm(t)}</time><div><span><b>${past?"":"✓ "}${s.map(x=>esc(x.name)+(x.name===me?" (Anda)":"")).join(", ")}</b>${c>1?`<small>${c} orang jaga bersama</small>`:past?"":`<small>Baru 1 orang jaga</small>`}</span>${past?"":my?`<button data-del="${my.id}">Batalkan</button>`:`<button data-join="${t}">Ikut jaga</button>`}</div></div>`
    :`<button class="row e${past?" past":""}" data-fill="${t}" ${past?"disabled":""}><time>${tm(t)}</time><div><b>${past?"Sudah lewat":"⚠ Belum ada penjaga"}</b>${past?"":`<span class="pill">Ambil</span>`}</div></button>`}
  $("#tl").innerHTML=h;
  $("#gaps").innerHTML=g.length?g.slice(0,8).map((x,i)=>{const u=x.start<n+2*D;
@@ -226,7 +233,7 @@ function render(){
  rteam();
 }
 
-const dst=(d,n)=>{let e=0,u=0;for(let k=0;k<24;k++){const t=d+k*H;if(t>=n){u++;if(!slots.has(t))e++}}return{e,u}};
+const dst=(d,n)=>{let e=0,u=0,y=0;for(let k=0;k<24;k++){const t=d+k*H;if(t>=n){u++;const c=cnt(t);if(!c)e++;else if(c==1)y++}}return{e,u,y}};
 function who(d){const m=new Map();shifts.forEach(s=>{if(s.start<d+D&&s.end>d){const a=Math.max(s.start,d),b=Math.min(s.end,d+D);m.set(s.name,[...(m.get(s.name)||[]),[a,b]])}});return[...m].sort((x,y)=>x[0].localeCompare(y[0]))}
 function mg(r){r.sort((a,b)=>a[0]-b[0]);const o=[];r.forEach(x=>{const l=o[o.length-1];if(l&&x[0]<=l[1])l[1]=Math.max(l[1],x[1]);else o.push([...x])});return o}
 const ini=n=>esc((n.trim()[0]||"?").toUpperCase());
@@ -242,12 +249,12 @@ function rteam(){
  $("#chips").innerHTML=L.length?L.map(o=>`<span class="chip"><i style="background:${col(o.name)}"></i>${esc(o.name)}${o.name===me?" (Anda)":""}</span>`).join(""):`<p class="mut">Belum ada caregiver yang punya jadwal. Ambil jadwal pertama!</p>`;
  $("#cgl").innerHTML=L.map(o=>`<div class="cg"><span class="av" style="background:${col(o.name)}">${ini(o.name)}</span><div><b>${esc(o.name)}</b><small>${o.on?"Sedang jaga sekarang":o.nx?"Berikutnya: "+dl(o.nx)+", "+tm(o.nx):"Belum ada jadwal"}</small>${o.h?`<small>${o.h} jam terjadwal ke depan</small>`:""}</div></div>`).join("");
  let c=["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map(x=>`<span>${x}</span>`).join("");
- for(let i=0;i<35;i++){const d=st+i*D,w=who(d),{e,u}=dst(d,n),dt=new Date(d),mk=dt.getDate()==1||i==0;
-  c+=`<button class="cc ${u?(e?"e":"f"):"p"}${d==T?" t":""}${d==tsel?" on":""}" data-d="${d}"><b>${dt.getDate()}${mk?" "+dt.toLocaleDateString("id-ID",{month:"short"}):""}</b><span class="dots">${w.slice(0,8).map(x=>`<i style="background:${col(x[0])}"></i>`).join("")}${w.length>8?`<em>+${w.length-8}</em>`:""}</span></button>`}
+ for(let i=0;i<35;i++){const d=st+i*D,w=who(d),{e,u,y}=dst(d,n),dt=new Date(d),mk=dt.getDate()==1||i==0;
+  c+=`<button class="cc ${u?(e?"e":y?"w":"f"):"p"}${d==T?" t":""}${d==tsel?" on":""}" data-d="${d}"><b>${dt.getDate()}${mk?" "+dt.toLocaleDateString("id-ID",{month:"short"}):""}</b><span class="dots">${w.slice(0,8).map(x=>`<i style="background:${col(x[0])}"></i>`).join("")}${w.length>8?`<em>+${w.length-8}</em>`:""}</span></button>`}
  $("#cal").innerHTML=c;
- const w=who(tsel),{e,u}=dst(tsel,n);
+ const w=who(tsel),{e,u,y}=dst(tsel,n);
  $("#dd").innerHTML=`<h2>${new Date(tsel).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"})}</h2>`
-  +(u?(e?`<p class="bad"><b>${e} jam belum ada penjaga</b></p>`:`<p class="ok"><b>Semua jam terisi</b></p>`):"")
+  +(u?(e?`<p class="bad"><b>${e} jam belum ada penjaga</b></p>`:"")+(y?`<p class="warn"><b>${y} jam baru dijaga 1 orang</b></p>`:"")+(e||y?"":`<p class="ok"><b>Semua jam dijaga lebih dari 1 orang</b></p>`):"")
   +(w.length?w.map(([nm,r])=>`<div class="wr"><span class="av" style="background:${col(nm)}">${ini(nm)}</span><div><b>${esc(nm)}${nm===me?" (Anda)":""}</b><small>${mg(r).map(([a,b])=>tm(a)+" sampai "+(b==tsel+D?"24.00":tm(b))).join(", ")}</small></div></div>`).join(""):`<p class="mut">Belum ada yang jaga di tanggal ini.</p>`);
 }
 function rmsg(){const el=$("#msgs"),bot=el.scrollHeight-el.scrollTop-el.clientHeight<90||!el.clientHeight;

@@ -24,7 +24,7 @@ service cloud.firestore { match /databases/{d}/documents {
   <button class="wa" id="wa">Bagikan jam kosong ke grup WhatsApp</button>
  </header>
  <div id="setup" hidden>Database belum terhubung. Isi <b>firebaseConfig</b> di file <b>app.js</b>, lalu buka lewat Firebase Hosting atau server lokal (bukan file://).</div>
- <div class="leg"><span><i style="background:var(--sbad)"></i>Merah: belum ada penjaga</span><span><i style="background:var(--swarn)"></i>Kuning: baru 1 penjaga</span><span><i style="background:var(--sok)"></i>Hijau: lebih dari 1 penjaga</span><span><i style="background:var(--line)"></i>Abu-abu: sudah lewat</span></div>
+ <div class="leg"><span><i style="background:var(--sbad)"></i>Belum ada penjaga</span><span><i style="background:var(--swarn)"></i>Baru 1 penjaga</span><span><i style="background:var(--sok)"></i>Lebih dari 1 penjaga</span><span><i style="background:var(--line)"></i>Sudah lewat</span></div>
  <p class="hint">Geser untuk memilih tanggal. Tulisan di tiap tanggal menunjukkan berapa jam yang masih kosong (merah) atau baru dijaga 1 orang (kuning).</p>
  <div id="strip" aria-label="Pilih tanggal"></div>
  <section><h2 id="dh"></h2><p class="mut" style="margin-bottom:8px">Ketuk kotak merah untuk mengambil jam itu. Ketuk Ikut jaga untuk menemani penjaga lain, terutama di kotak kuning.</p><div id="tl"></div>
@@ -36,7 +36,6 @@ service cloud.firestore { match /databases/{d}/documents {
  <div class="in"><input id="mi" maxlength="500" placeholder="Tulis pesan untuk semua caregiver" autocomplete="off"><button id="ms">Kirim</button></div>
 </main>
 <main id="v-tim" hidden>
- <h1>Tim caregiver</h1>
  <h2>Sedang jaga sekarang</h2>
  <div class="now e" id="now"><div class="nt"><div><small id="cdt"></small><b id="clk"></b></div><span class="nst e" id="nst">Kosong</span></div><div id="nl"></div></div>
  <h2>Semua caregiver <span id="cgn" class="mut"></span></h2><div id="chips"></div>
@@ -45,7 +44,7 @@ service cloud.firestore { match /databases/{d}/documents {
  <div class="cal" id="cal"></div><div id="dd"></div>
  <h2>Rincian caregiver</h2><div id="cgl"></div>
 </main>
-<nav><button class="tab on" id="t-jadwal" data-t="jadwal">Jadwal</button><button class="tab" id="t-tim" data-t="tim">Tim</button><button class="tab" id="t-chat" data-t="chat">Chat</button></nav>
+<nav><button class="tab on" id="t-jadwal" data-t="jadwal">Jadwal</button><button class="tab" id="t-tim" data-t="tim">Home</button><button class="tab" id="t-chat" data-t="chat">Chat</button></nav>
 </div>
 
 <dialog id="sh"><h1>Ambil jadwal jaga</h1><p class="mut">Pilih jam yang ingin Anda jaga. Ketuk salah satu paket di bawah, atau atur tanggal dan jam sendiri. Boleh memilih jam yang sudah dijaga orang lain.</p>
@@ -65,7 +64,7 @@ service cloud.firestore { match /databases/{d}/documents {
  <div class="st"><b>3</b><div><h3>Ambil jam yang kosong</h3><p>Ketuk kotak merah, atau tombol "+ Ambil jadwal" di kanan bawah. Atur tanggal dan jam, lalu ketuk Simpan jadwal. Kotaknya berubah kuning dan memuat nama Anda. Satu jam boleh dijaga lebih dari satu orang: ketuk Ikut jaga pada kotak kuning untuk menemani penjaga lain. Kotak kuning berubah hijau setelah ada penjaga kedua.</p></div></div>
  <div class="st"><b>4</b><div><h3>Tidak jadi bisa jaga?</h3><p>Cari jadwal Anda (kotak kuning atau hijau yang ada nama Anda), lalu ketuk Batalkan. Setelah itu ketuk "Bagikan jam kosong ke grup WhatsApp" agar ada yang menggantikan.</p></div></div>
  <div class="st"><b>5</b><div><h3>Mau bicara dengan penjaga lain?</h3><p>Buka tab Chat di bagian bawah layar. Semua penjaga bisa membaca pesan Anda, cocok untuk kabar obat, kondisi mamah, atau tukar jaga.</p></div></div>
- <div class="st"><b>6</b><div><h3>Lihat siapa yang jaga</h3><p>Buka tab Tim di bagian bawah layar. Bagian paling atas menunjukkan siapa yang sedang jaga sekarang, lengkap dengan jam berjalan. Setiap caregiver punya warna sendiri di tab ini, Titik warna di kalender menunjukkan siapa yang jaga di tanggal itu. Ketuk tanggal untuk melihat jamnya.</p></div></div>
+ <div class="st"><b>6</b><div><h3>Lihat siapa yang jaga</h3><p>Buka tab Home di bagian bawah layar. Bagian paling atas menunjukkan siapa yang sedang jaga sekarang, lengkap dengan jam berjalan. Setiap caregiver punya warna sendiri di tab ini, Titik warna di kalender menunjukkan siapa yang jaga di tanggal itu. Ketuk tanggal untuk melihat jamnya.</p></div></div>
  <div class="tipb"><b>Contoh jaga malam</b><br>Jaga dari jam 22.00 sampai jam 06.00 pagi: pilih Mulai 22.00 dan Selesai 06.00. Jaga otomatis lanjut ke hari berikutnya.</div>
  <button class="pri" id="gx" style="width:100%">Mengerti, mulai</button></dialog>
 <div id="toast" hidden></div>

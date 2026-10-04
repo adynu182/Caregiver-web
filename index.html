@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang="id"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Jadwal Jaga Caregiver</title>
+<title>Jadwal Jaga Mamah</title>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
 <!--
 FIRESTORE RULES (tempel di Firebase Console > Firestore > Rules). Tanpa login, jadi batasi isi dokumen:
 rules_version='2';
 service cloud.firestore { match /databases/{d}/documents {
   match /shifts/{id} { allow read, delete: if true;
-    allow create: if request.resource.data.name is string && request.resource.data.end > request.resource.data.start; }
+    allow create: if request.resource.data.name in ['Adi','Indri','Rani','Rendra','Teja','Tia'] && request.resource.data.end > request.resource.data.start; }
   match /messages/{id} { allow read: if true;
     allow create: if request.resource.data.text is string && request.resource.data.text.size() <= 500; }
 }}
@@ -118,7 +118,7 @@ dialog input,dialog select{display:block;width:100%;margin-top:4px;padding:10px;
 <body><div id="app">
 <main id="v-jadwal">
  <header>
-  <div class="top"><span id="pt"></span><span><button id="th" aria-label="Ganti tema">🌙</button><button id="hp">Cara pakai</button><button id="who">Isi nama</button></span></div>
+  <div class="top"><span id="pt"></span><span><button id="th" aria-label="Ganti tema">🌙</button><button id="hp">Cara pakai</button><button id="who">Pilih nama</button></span></div>
   <h1>Jadwal jaga</h1>
   <div id="sum"></div>
   <button class="wa" id="wa">Bagikan jam kosong ke grup WhatsApp</button>
@@ -155,15 +155,15 @@ dialog input,dialog select{display:block;width:100%;margin-top:4px;padding:10px;
  <p id="er" class="bad"></p>
  <div class="two"><button class="sec" id="fc">Batal</button><button class="pri" id="fv">Simpan jadwal</button></div>
 </dialog>
-<dialog id="nm"><h1>Siapa nama Anda?</h1><label>Nama caregiver<input id="ni" maxlength="30" autocomplete="name"></label><button class="pri" id="nb" style="width:100%">Mulai</button></dialog>
+<dialog id="nm"><h1>Siapa nama Anda?</h1><label>Pilih nama caregiver<select id="ni"></select></label><button class="pri" id="nb" style="width:100%">Mulai</button></dialog>
 <dialog id="gd"><h1>Cara pakai</h1>
  <p class="mut">Tujuan kita sama: setiap jam, siang dan malam, ada yang menjaga mamah.</p>
- <div class="st"><b>1</b><div><h3>Isi nama Anda</h3><p>Ketuk tombol nama di pojok kanan atas, tulis nama, lalu ketuk Mulai. Cukup sekali, nama diingat di HP ini.</p></div></div>
+ <div class="st"><b>1</b><div><h3>Pilih nama Anda</h3><p>Pilih nama Anda dari daftar, lalu ketuk Mulai. Cukup sekali, nama diingat di HP ini. Untuk ganti nama, ketuk tombol nama di pojok kanan atas.</p></div></div>
  <div class="st"><b>2</b><div><h3>Cari kotak merah</h3><p>Merah artinya jam itu belum ada yang menjaga. Hijau artinya sudah ada penjaga. Geser tanggal di atas untuk melihat hari lain.</p></div></div>
  <div class="st"><b>3</b><div><h3>Ambil jam yang kosong</h3><p>Ketuk kotak merah, atau tombol "+ Ambil jadwal" di kanan bawah. Atur tanggal dan jam, lalu ketuk Simpan jadwal. Kotaknya berubah hijau dan memuat nama Anda. Satu jam boleh dijaga lebih dari satu orang: ketuk Ikut jaga pada kotak hijau untuk menemani penjaga lain.</p></div></div>
  <div class="st"><b>4</b><div><h3>Tidak jadi bisa jaga?</h3><p>Cari jadwal Anda yang hijau, lalu ketuk Batalkan. Setelah itu ketuk "Bagikan jam kosong ke grup WhatsApp" agar ada yang menggantikan.</p></div></div>
  <div class="st"><b>5</b><div><h3>Mau bicara dengan penjaga lain?</h3><p>Buka tab Chat di bagian bawah layar. Semua penjaga bisa membaca pesan Anda, cocok untuk kabar obat, kondisi mamah, atau tukar jaga.</p></div></div>
- <div class="st"><b>6</b><div><h3>Lihat siapa yang jaga</h3><p>Buka tab Tim di bagian bawah layar. Setiap caregiver punya warna sendiri di tab ini, dan warna bisa berubah kalau ada caregiver baru. Titik warna di kalender menunjukkan siapa yang jaga di tanggal itu. Ketuk tanggal untuk melihat jamnya.</p></div></div>
+ <div class="st"><b>6</b><div><h3>Lihat siapa yang jaga</h3><p>Buka tab Tim di bagian bawah layar. Setiap caregiver punya warna sendiri di tab ini, Titik warna di kalender menunjukkan siapa yang jaga di tanggal itu. Ketuk tanggal untuk melihat jamnya.</p></div></div>
  <div class="tipb"><b>Contoh jaga malam</b><br>Jaga dari jam 22.00 sampai jam 06.00 pagi: pilih Mulai 22.00 dan Selesai 06.00. Jaga otomatis lanjut ke hari berikutnya.</div>
  <button class="pri" id="gx" style="width:100%">Mengerti, mulai</button></dialog>
 <div id="toast" hidden></div>
@@ -193,6 +193,9 @@ let db=null,me=localStorage.getItem("cg_name")||"",shifts=[],msgs=[],slots=new M
 const PAL=["#2f6fed","#d97706","#8e44ad","#0f8b8d","#d6336c","#8d6e3f","#4b4bd1","#6b8e23","#0b7fc0","#5c7a99","#b7791f","#a0386b"];
 const key=n=>encodeURIComponent(n.trim().toLowerCase());
 const col=n=>cmap.get(key(n))||"#7a8a89"; // warna hanya di tab Tim, dihitung di browser
+const NAMES=["Adi","Indri","Rani","Rendra","Teja","Tia"];
+if(!NAMES.includes(me)){me="";localStorage.removeItem("cg_name")} // nama lama di luar daftar diminta pilih ulang
+$("#ni").innerHTML='<option value="">Pilih nama...</option>'+NAMES.map(n=>`<option>${n}</option>`).join("");
 const days=[...Array(14)].map((_,i)=>day0(Date.now())+i*D);
 
 if(firebaseConfig.apiKey.startsWith("ISI")) $("#setup").hidden=false;
@@ -207,7 +210,7 @@ function gaps(){const g=[],n=now();let c=null;
 function render(){
  slots=new Map();shifts.forEach(s=>{for(let t=s.start;t<s.end;t+=H)slots.set(t,[...(slots.get(t)||[]),s])});
  const n=now(),g=gp=gaps(),empty=g.reduce((a,x)=>a+(x.end-x.start)/H,0),pct=Math.round((1-empty/(14*24))*100);
- $("#pt").textContent=PASIEN;$("#who").textContent=me||"Isi nama";
+ $("#pt").textContent=PASIEN;$("#who").textContent=me||"Pilih nama";
  $("#sum").innerHTML=empty?`<b class="bad">${empty} jam belum ada penjaga</b><div class="pb"><i style="width:${pct}%"></i></div><span>${pct}% terisi untuk 14 hari ke depan. Hijau sudah ada penjaga, merah masih kosong.</span>`
   :`<b class="ok">Semua jam terisi</b><div class="pb"><i style="width:100%"></i></div><span>14 hari ke depan aman</span>`;
  $("#strip").innerHTML=days.map((d,i)=>{let e=0,u=0;for(let k=0;k<24;k++){const t=d+k*H;if(t>=n){u++;if(!slots.has(t))e++}}const st=!u?"p":e?"e":"f";
@@ -229,6 +232,7 @@ function mg(r){r.sort((a,b)=>a[0]-b[0]);const o=[];r.forEach(x=>{const l=o[o.len
 const ini=n=>esc((n.trim()[0]||"?").toUpperCase());
 function rteam(){
  const n=now(),T=day0(Date.now()),st=T-((new Date(T).getDay()+6)%7)*D,names=new Map();
+ NAMES.forEach(nm=>names.set(key(nm),{name:nm,h:0,nx:0,on:false}));
  
  shifts.forEach(s=>{const k=key(s.name);if(!names.has(k))names.set(k,{name:s.name,h:0,nx:0,on:false});
   if(s.end>n){const o=names.get(k),a=Math.max(s.start,n);o.h+=(s.end-a)/H;if(s.start<=n)o.on=true;if(!o.nx||a<o.nx)o.nx=a}});

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Jadwal Jaga Mamah</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f5;--ink:#14262e;--mut:#55696f;--pri:#0b5d73;--ok:#15803d;--okb:#d9f5e3;--wn:#b45309;--wnb:#fdecc8;--bd:#b91c1c;--bdb:#fddcdc}
+*{box-sizing:border-box;margin:0}
+body{font:400 17px/1.4 'Atkinson Hyperlegible',system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:0 14px calc(100px + env(safe-area-inset-bottom))}
+b,h1,h2{font-weight:700}
+header{padding:calc(18px + env(safe-area-inset-top)) 2px 4px}
+h1{font-size:26px}h2{font-size:20px}
+.sub{color:var(--mut);font-size:15px}
+.card{background:#fff;border-radius:22px;padding:16px;margin:12px 0;box-shadow:0 1px 3px #0b5d7326}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;min-height:48px;padding:0 16px;background:#e1ebee;color:var(--ink)}
+.pri{background:var(--pri);color:#fff}
+#mode{background:var(--wnb);padding:10px 14px;border-radius:14px;margin-top:10px;font-size:15px}
+#kc{border-left:10px solid var(--pri)}#kc.soon{background:var(--wnb);border-color:var(--wn)}
+#kc button{width:100%;margin-top:10px}
+.big{font-size:21px;font-weight:700;margin-top:4px}
+.ch{display:flex;align-items:center;justify-content:space-between}
+.ch button{width:52px;padding:0;font-size:26px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-top:10px}
+.dow{font-size:13px;color:var(--mut)}
+.day{position:relative;min-height:52px;padding:4px 0;background:#f3f7f8;border-radius:12px;font-weight:400}
+.day i{display:block;width:12px;height:12px;border-radius:50%;margin:3px auto 0;background:var(--c)}
+.day small{position:absolute;top:0;right:1px;font-size:11px}
+.day.sel{outline:3px solid var(--pri);background:#fff}
+.day.today b{background:var(--pri);color:#fff;border-radius:10px;padding:0 6px}
+.ok{--c:var(--ok);--b:var(--okb)}.wn{--c:var(--wn);--b:var(--wnb)}.bd{--c:var(--bd);--b:var(--bdb)}
+.lg{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px}
+.lg button{min-height:40px}
+.pill{display:inline-block;padding:6px 12px;border-radius:20px;background:var(--b);color:var(--c);font-weight:700;margin:6px 0 4px}
+.kd{background:var(--wnb);border-radius:14px;padding:10px 12px;margin:8px 0}
+.row{display:flex;align-items:center;gap:8px;min-height:54px;padding:6px 10px;margin:6px 0;border-radius:12px 18px 18px 12px;background:var(--b);border-left:8px solid var(--c)}
+.row time{width:52px;font-weight:700}.row time small{display:block;font-size:11px;color:var(--c)}
+.who{flex:1;display:flex;flex-wrap:wrap;gap:5px}
+.chip{padding:3px 10px;border-radius:20px;color:#fff;font-size:15px;font-weight:700}
+.st{width:64px;text-align:right;font-size:13px;font-weight:700;color:var(--c)}
+.now{outline:3px solid var(--ink)}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(#eef3f500,var(--bg) 35%)}
+.bar button{width:100%;min-height:58px;font-size:19px;border-radius:18px}
+dialog{border:0;border-radius:26px 26px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:520px;margin:auto auto 0;max-height:94dvh;color:var(--ink)}
+dialog::backdrop{background:#000a}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;border-radius:12px;padding:6px 10px;background:#fff}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts button{--c:var(--pri);flex:1 0 30%;border:3px solid var(--c);background:#fff}
+.opts .on{background:var(--c);color:#fff}
+.two{display:flex;gap:8px;margin-top:16px}.two button{flex:1}.two>div{flex:1}
+.ki{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #dde7ea}
+.ki button{min-width:48px;padding:0}
+</style>
+</head>
+<body>
+<header><h1>Jadwal Jaga Mamah</h1><p class="sub">Setiap jam harus ada minimal 2 orang yang jaga.</p></header>
+<div id="mode" hidden>Mode contoh: Firebase belum diisi, data hanya tersimpan di HP ini. Isi file <b>firebase-config.js</b> agar jadwal terlihat oleh semua.</div>
+<section id="kc" class="card"></section>
+<section class="card">
+  <div class="ch"><button id="pv" aria-label="Bulan sebelumnya">‹</button><h2 id="mt"></h2><button id="nx" aria-label="Bulan berikutnya">›</button></div>
+  <div class="grid" id="cal"></div>
+  <div class="lg"><span class="sub">🟢 Aman 🟠 Kurang orang 🔴 Kosong</span><button id="td">Hari ini</button></div>
+</section>
+<section class="card"><div id="dh"></div><div id="tl"></div></section>
+<nav class="bar"><button class="pri" id="bj">＋ Ambil jadwal jaga</button></nav>
+
+<dialog id="dj"><h2>Ambil jadwal jaga</h2>
+  <label>Siapa kamu?</label><div class="opts" id="pn"></div>
+  <label for="jd">Tanggal mulai jaga</label><input type="date" id="jd">
+  <label>Pilih waktu jaga</label>
+  <div class="opts" id="ps"><button data-p="6-14">Pagi<br>06 sampai 14</button><button data-p="14-22">Siang<br>14 sampai 22</button><button data-p="22-6">Malam<br>22 sampai 06</button><button data-p="0-0">Sehari penuh<br>24 jam</button></div>
+  <div class="two"><div><label for="js">Dari jam</label><select id="js"></select></div><div><label for="je">Sampai jam</label><select id="je"></select></div></div>
+  <p class="sub" id="jp" style="margin-top:10px"></p>
+  <div class="two"><button data-close>Batal</button><button class="pri" id="jok">Simpan jadwal</button></div>
+</dialog>
+
+<dialog id="dk"><h2>Jadwal kontrol dokter</h2><div id="kl"></div>
+  <label>Tambah jadwal kontrol</label>
+  <div class="opts" id="kd"><button data-v="Syaraf">Dokter Syaraf</button><button data-v="Jantung">Dokter Jantung</button></div>
+  <label for="kt">Tanggal</label><input type="date" id="kt">
+  <label for="kj">Jam</label><input type="time" id="kj" value="09:00">
+  <label for="kn">Catatan (contoh: bawa hasil CT scan)</label><input id="kn" maxlength="120">
+  <div class="two"><button data-close>Tutup</button><button class="pri" id="kok">Simpan kontrol</button></div>
+</dialog>
+
+<script type="module">
+import {firebaseConfig as C} from './firebase-config.js';
+const NAMES={Adi:'#2563eb',Indri:'#c026d3',Rendra:'#0f766e',Ranu:'#7c3aed',Teja:'#92400e',Tia:'#be123c'};
+const HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],BLN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=s=>{const[a,b,c]=s.split('-');return new Date(a,b-1,c)};
+const tgl=s=>{const d=parse(s);return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]}`};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>`&#${c.charCodeAt(0)};`);
+const today=ymd(new Date());
+let S={slots:{},kontrol:[]},sel=today,view=parse(today),pick=localStorage.nama||'',dok='Syaraf',cloud=false,db,F,unsub;
+view.setDate(1);
+const save=()=>localStorage.jagamamah=JSON.stringify(S);
+const cnt=(d,h)=>(S.slots[d]?.[h]||[]).length;
+const stat=d=>['bd','wn','ok'][Math.min(2,...Array.from({length:24},(_,h)=>cnt(d,h)))];
+
+async function apply(date,hrs,name,add){
+  if(!hrs.length)return;
+  if(cloud){const o={};hrs.forEach(h=>o[h]=(add?F.arrayUnion:F.arrayRemove)(name));await F.setDoc(F.doc(db,'jadwal',date),{slots:o},{merge:true})}
+  else{const d=S.slots[date]??={};hrs.forEach(h=>{const a=d[h]??=[],i=a.indexOf(name);if(add&&i<0)a.push(name);if(!add&&i>=0)a.splice(i,1)});save();render()}
+}
+function range(date,s,e,name){
+  const a=[],b=[],n=parse(date);n.setDate(n.getDate()+1);
+  if(e>s)for(let h=s;h<e;h++)a.push(h);else{for(let h=s;h<24;h++)a.push(h);for(let h=0;h<e;h++)b.push(h)}
+  return Promise.all([apply(date,a,name,true),apply(ymd(n),b,name,true)]);
+}
+function sub(){
+  if(!cloud)return render();
+  unsub?.();const m=ymd(view).slice(0,7);
+  unsub=F.onSnapshot(F.query(F.collection(db,'jadwal'),F.where(F.documentId(),'>=',m+'-01'),F.where(F.documentId(),'<=',m+'-31')),q=>{q.forEach(d=>S.slots[d.id]=d.data().slots||{});render()});
+}
+function go(date){sel=date;view=parse(date);view.setDate(1);sub()}
+function mv(n){view.setMonth(view.getMonth()+n);const m=ymd(view).slice(0,7);sel=today.startsWith(m)?today:m+'-01';sub()}
+
+function cal(){
+  const y=view.getFullYear(),m=view.getMonth(),f=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
+  $('#mt').textContent=`${BLN[m]} ${y}`;
+  let h=['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(d=>`<div class="dow">${d}</div>`).join('')+'<div></div>'.repeat(f);
+  for(let d=1;d<=n;d++){const k=`${y}-${pad(m+1)}-${pad(d)}`;
+    h+=`<button class="day ${stat(k)}${k==sel?' sel':''}${k==today?' today':''}" data-d="${k}"><b>${d}</b><i></i>${S.kontrol.some(c=>c.date==k)?'<small>🩺</small>':''}</button>`}
+  $('#cal').innerHTML=h;
+}
+function tl(){
+  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1;let low=0,h='';
+  for(let i=0;i<24;i++){
+    const a=d[i]||[],k=Math.min(a.length,2);if(k<2)low++;
+    h+=`<div class="row ${['bd','wn','ok'][k]}${i==nowH?' now':''}" data-h="${i}"><time>${pad(i)}:00${i==nowH?'<small>sekarang</small>':''}</time><div class="who">${a.map(n=>`<span class="chip" style="background:${NAMES[n]||'#555'}" data-x="${i}|${n}">${esc(n)} ✕</span>`).join('')}</div><span class="st">${['Kosong','Kurang 1 orang','Aman'][k]}</span></div>`;
+  }
+  const ks=S.kontrol.filter(c=>c.date==sel).map(c=>`<div class="kd">🩺 <b>Kontrol dokter ${esc(c.dokter)} jam ${esc(c.time)}</b>${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</div>`).join('');
+  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2><span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang di ${low} jam`:'Lengkap, 24 jam ada 2 orang'}</span>${ks}<p class="sub">Ketuk jam untuk ikut jaga. Ketuk nama untuk membatalkan.</p>`;
+  $('#tl').innerHTML=h;
+}
+function kc(){
+  const up=S.kontrol.filter(c=>c.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)),c=up[0],dd=c&&Math.round((parse(c.date)-parse(today))/864e5);
+  $('#kc').className='card'+(c&&dd<=2?' soon':'');
+  $('#kc').innerHTML=(c?`<b>Kontrol dokter berikutnya</b><div class="big">Dokter ${esc(c.dokter)}, ${dd?dd==1?'besok':dd+' hari lagi':'hari ini'}</div><p>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</p>`:'<b>Belum ada jadwal kontrol dokter</b>')+'<button data-k>Lihat dan tambah jadwal kontrol</button>';
+  $('#kl').innerHTML=up.map(c=>`<div class="ki"><span><b>Dokter ${esc(c.dokter)}</b><br>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>${esc(c.catatan)}`:''}</span><button data-del="${esc(c.id)}" aria-label="Hapus">🗑</button></div>`).join('')||'<p class="sub">Belum ada jadwal.</p>';
+}
+function render(){cal();tl();kc()}
+
+const sH=$('#js'),eH=$('#je');
+sH.innerHTML=eH.innerHTML=Array.from({length:24},(_,h)=>`<option value="${h}">${pad(h)}:00</option>`).join('');
+eH.options[0].text='00:00 (tengah malam)';
+function paint(){
+  $('#pn').innerHTML=Object.keys(NAMES).map(n=>`<button data-n="${n}" class="${n==pick?'on':''}" style="--c:${NAMES[n]}">${n}</button>`).join('');
+  const s=+sH.value,e=+eH.value,len=e>s?e-s:24-s+e;
+  [...$('#ps').children].forEach(b=>b.classList.toggle('on',b.dataset.p==`${s}-${e}`));
+  $('#jp').textContent=`${pick||'Pilih namamu dulu'}: jaga ${len} jam, dari ${pad(s)}:00 sampai ${e<=s?'besok ':''}${pad(e)}:00`;
+}
+function openJ(s=6,e=14){$('#jd').value=sel;sH.value=s;eH.value=e%24;paint();$('#dj').showModal()}
+const paintK=()=>[...$('#kd').children].forEach(b=>b.classList.toggle('on',b.dataset.v==dok));
+
+$('#dj').addEventListener('change',paint);
+$('#pv').onclick=()=>mv(-1);$('#nx').onclick=()=>mv(1);
+$('#td').onclick=()=>go(today);$('#bj').onclick=()=>openJ();
+$('#jok').onclick=async()=>{
+  if(!pick)return alert('Pilih namamu dulu ya.');
+  const date=$('#jd').value||sel;
+  try{await range(date,+sH.value,+eH.value,pick)}catch{return alert('Gagal menyimpan. Cek internet lalu coba lagi.')}
+  localStorage.nama=pick;go(date);$('#dj').close();
+};
+$('#kok').onclick=async()=>{
+  const o={dokter:dok,date:$('#kt').value,time:$('#kj').value||'09:00',catatan:$('#kn').value.trim()};
+  if(!o.date)return alert('Pilih tanggal kontrol dulu ya.');
+  try{if(cloud)await F.addDoc(F.collection(db,'kontrol'),o);else{S.kontrol.push({id:Date.now()+'',...o});save()}}catch{return alert('Gagal menyimpan. Cek internet lalu coba lagi.')}
+  $('#kn').value='';go(o.date);$('#dk').close();
+};
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('[data-d],[data-x],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close]');if(!t)return;
+  const D=t.dataset;
+  if('close' in D)t.closest('dialog').close();
+  else if(D.d){sel=D.d;render()}
+  else if(D.x){
+    const[i,n]=D.x.split('|'),d=S.slots[sel]||{};let s=+i,en=+i;
+    while(s>0&&d[s-1]?.includes(n))s--;while(en<23&&d[en+1]?.includes(n))en++;
+    if(confirm(`Batalkan jaga ${n} jam ${pad(s)}:00 sampai ${pad(en+1)}:00?`))apply(sel,Array.from({length:en-s+1},(_,k)=>s+k),n,false).catch(()=>alert('Gagal membatalkan. Coba lagi.'));
+  }
+  else if(D.h)openJ(+D.h,+D.h+1);
+  else if(D.p){[sH.value,eH.value]=D.p.split('-');paint()}
+  else if(D.n){pick=D.n;paint()}
+  else if(D.v){dok=D.v;paintK()}
+  else if('k' in D){$('#kt').value=sel;paintK();$('#dk').showModal()}
+  else if(D.del&&confirm('Hapus jadwal kontrol ini?')){
+    try{if(cloud)await F.deleteDoc(F.doc(db,'kontrol',D.del));else{S.kontrol=S.kontrol.filter(c=>c.id!=D.del);save();render()}}catch{alert('Gagal menghapus. Coba lagi.')}
+  }
+});
+
+if(!C?.projectId||String(C.projectId).startsWith('ISI')){
+  $('#mode').hidden=false;
+  try{S={...S,...JSON.parse(localStorage.jagamamah||'{}')}}catch{}
+}else{
+  const V='10.12.2',A=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+  F=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+  db=F.getFirestore(A.initializeApp(C));cloud=true;
+  F.onSnapshot(F.collection(db,'kontrol'),q=>{S.kontrol=q.docs.map(d=>({id:d.id,...d.data()}));render()});
+}
+sub();
+</script>
+</body>
+</html>

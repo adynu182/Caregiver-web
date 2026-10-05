@@ -6,7 +6,7 @@
 <title>Jadwal Jaga Mamah</title>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eef3f5;--ink:#14262e;--mut:#55696f;--pri:#0b5d73;--ok:#15803d;--okb:#d9f5e3;--wn:#b45309;--wnb:#fdecc8;--bd:#b91c1c;--bdb:#fddcdc}
+:root{--rh:56px;--bg:#eef3f5;--ink:#14262e;--mut:#55696f;--pri:#0b5d73;--ok:#15803d;--okb:#d9f5e3;--wn:#b45309;--wnb:#fdecc8;--bd:#b91c1c;--bdb:#fddcdc}
 *{box-sizing:border-box;margin:0}
 body{font:400 17px/1.4 'Atkinson Hyperlegible',system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:0 14px calc(100px + env(safe-area-inset-bottom))}
 b,h1,h2{font-weight:700}
@@ -35,13 +35,7 @@ button:active{border-bottom-width:2px;transform:translateY(4px);box-shadow:none}
 .lg button{min-height:40px}
 .pill{display:inline-block;padding:6px 12px;border-radius:20px;background:var(--b);color:var(--c);font-weight:700;margin:6px 0 4px}
 .kd{background:var(--wnb);border-radius:14px;padding:10px 12px;margin:8px 0}
-.row{display:flex;align-items:center;gap:8px;min-height:54px;padding:6px 10px;margin:6px 0;border-radius:12px 18px 18px 12px;background:var(--b);border-left:8px solid var(--c)}
-.row time{width:52px;font-weight:700}.row time small{display:block;font-size:11px;color:var(--c)}
-.who{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.chip{min-height:40px;padding:0 12px;border-radius:20px;color:#fff;font-size:15px}
-.st{font-size:14px;font-weight:700;color:var(--c)}.join{flex:none;min-height:44px;padding:0 12px;background:var(--pri);color:#fff}
 .meter{display:flex;align-items:center;gap:8px;margin:10px 0}.meter b{width:64px}.meter div{flex:1;height:14px;background:#e1ebee;border-radius:7px;overflow:hidden}.meter i{display:block;height:100%}.meter span{width:78px;text-align:right}
-.now{outline:3px solid var(--ink)}
 .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(#eef3f500,var(--bg) 35%)}
 .bar button{width:100%;min-height:58px;font-size:19px;border-radius:18px}
 dialog{border:0;border-radius:26px 26px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:520px;margin:auto auto 0;max-height:94dvh;color:var(--ink)}
@@ -54,6 +48,17 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 .two{display:flex;gap:8px;margin-top:16px}.two button{flex:1}.two>div{flex:1}
 .ki{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #dde7ea}
 .ki button{min-width:48px;padding:0}
+.tgh,.tgb{display:grid;grid-template-columns:42px repeat(6,minmax(0,1fr))}
+.tgh{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:#fff;padding-bottom:6px}
+.tgb{position:relative}
+.uh{min-height:44px;padding:0;font-size:11px;border-radius:10px;background:var(--c);color:#fff;margin:0 1px}
+.tm{height:var(--rh);padding:5px 3px 0 0;font-size:11px;font-weight:700;text-align:right;color:var(--c);background:var(--b);border-bottom:2px solid #fff}
+.tm small{display:block;font-size:12px}
+.ln{position:relative;border-left:1px solid #dfe7ea;background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--rh) - 1px),#dfe7ea calc(var(--rh) - 1px) var(--rh))}
+.ev{position:absolute;left:2px;right:2px;min-height:0;padding:4px 3px;border-radius:8px;border:0;border-left:4px solid var(--c);border-bottom:4px solid #0003;background:var(--g);color:var(--ink);text-align:left;overflow:hidden;font-weight:400}
+.ev b{display:block;font-size:11px}.ev small{display:block;font-size:10px}
+.nowl{position:absolute;left:0;right:0;height:2px;background:#e11d48;z-index:5;pointer-events:none}
+.nowl::before{content:"Sekarang";position:absolute;left:0;top:-8px;padding:0 2px;font-size:9px;font-weight:700;color:#e11d48;background:#fff}
 </style>
 </head>
 <body>
@@ -65,7 +70,7 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
   <div class="grid" id="cal"></div>
   <div class="lg"><span class="sub">🟢 Aman 🟠 Kurang orang 🔴 Kosong</span><button id="td">Hari ini</button></div>
 </section>
-<section class="card"><div id="dh"></div><div id="tl"></div></section>
+<section class="card" style="padding:16px 8px"><div id="dh" style="padding:0 8px"></div><div id="tl"></div></section>
 <section class="card" id="sc"></section>
 <nav class="bar"><button class="pri" id="bj">＋ Ambil jadwal jaga</button></nav>
 
@@ -90,7 +95,7 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 
 <script type="module">
 import {firebaseConfig as C} from './firebase-config.js';
-const NAMES={Adi:'#2563eb',Indri:'#c026d3',Rendra:'#0f766e',Rani:'#7c3aed',Teja:'#92400e',Tia:'#be123c'};
+const NAMES={Adi:'#2563eb',Indri:'#c026d3',Rendra:'#0f766e',Ranu:'#7c3aed',Teja:'#92400e',Tia:'#be123c'};
 const HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],BLN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
 const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -102,6 +107,7 @@ let S={slots:{},kontrol:[]},sel=today,view=parse(today),pick=localStorage.nama||
 view.setDate(1);
 const save=()=>localStorage.jagamamah=JSON.stringify(S);
 const cnt=(d,h)=>(S.slots[d]?.[h]||[]).length;
+const RH=56;
 const past=(d,h)=>d<today||(d==today&&h<new Date().getHours());
 const stat=d=>{if(d<today)return 'pd';const s=d==today?new Date().getHours():0;return ['bd','wn','ok'][Math.min(2,...Array.from({length:24-s},(_,k)=>cnt(d,s+k)))]};
 
@@ -130,14 +136,15 @@ function cal(){
   $('#cal').innerHTML=h;
 }
 function tl(){
-  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1,st=sel<today?24:Math.max(nowH,0);let low=0,h='';
-  for(let i=st;i<24;i++){
-    const a=d[i]||[],k=Math.min(a.length,2);if(k<2)low++;
-    h+=`<div class="row ${['bd','wn','ok'][k]}${i==nowH?' now':''}"><time>${pad(i)}:00${i==nowH?'<small>sekarang</small>':''}</time><div class="who">${a.map(n=>`<button class="chip" style="background:${NAMES[n]||'#555'}" data-x="${i}|${n}">${esc(n)} ✕</button>`).join('')}<span class="st">${['Belum ada yang jaga','Kurang 1 orang','✓ Aman'][k]}</span></div>${k<2?`<button class="join" data-h="${i}">＋ Ikut</button>`:''}</div>`;
-  }
+  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1,st=sel<today?24:Math.max(nowH,0),N=24-st,names=Object.keys(NAMES);let low=0,hrs='',lanes='';
+  for(let i=st;i<24;i++){const k=Math.min((d[i]||[]).length,2);if(k<2)low++;hrs+=`<div class="tm ${['bd','wn','ok'][k]}">${pad(i)}:00<small>${k<2?k+'/2':'✓'}</small></div>`}
+  names.forEach(n=>{let ev='';
+    for(let i=st;i<24;i++){if(!d[i]?.includes(n))continue;let e=i;while(e<23&&d[e+1]?.includes(n))e++;
+      ev+=`<button class="ev" style="top:${(i-st)*RH}px;height:${(e-i+1)*RH}px;--c:${NAMES[n]};--g:${NAMES[n]}2e" data-x="${i}|${n}"><b>Jaga</b><small>${pad(i)}-${pad(e+1)}</small></button>`;i=e}
+    lanes+=`<div class="ln" data-lane="${n}" data-st="${st}">${ev}</div>`});
   const ks=S.kontrol.filter(c=>c.date==sel).map(c=>`<div class="kd">🩺 <b>Kontrol dokter ${esc(c.dokter)} jam ${esc(c.time)}</b>${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</div>`).join('');
-  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(sel<today?'<p class="sub">Hari ini sudah lewat, jadwalnya disembunyikan.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang di ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">${nowH>0?'Jam yang sudah lewat disembunyikan. ':''}Ketuk tombol Ikut untuk menambah jaga, ketuk nama untuk membatalkan.</p>`);
-  $('#tl').innerHTML=h;
+  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(sel<today?'<p class="sub">Hari ini sudah lewat, jadwalnya disembunyikan.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang di ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">Angka di kiri = jumlah orang yang jaga (minimal 2). Ketuk nama atau kolom kosong untuk ikut jaga, ketuk kotak berwarna untuk membatalkan.${nowH>0?' Jam yang sudah lewat disembunyikan.':''}</p>`);
+  $('#tl').innerHTML=N?`<div class="tgh"><div></div>${names.map(n=>`<button class="uh" data-u="${n}" style="--c:${NAMES[n]}">${n}</button>`).join('')}</div><div class="tgb" style="height:${N*RH}px"><div>${hrs}</div>${lanes}${nowH>=0?`<div class="nowl" style="top:${new Date().getMinutes()/60*RH}px"></div>`:''}</div>`:'';
 }
 function sc(){
   const t=Object.fromEntries(Object.keys(NAMES).map(n=>[n,0])),nh=new Date().getHours();
@@ -162,7 +169,7 @@ function paint(){
   [...$('#ps').children].forEach(b=>b.classList.toggle('on',b.dataset.p==`${s}-${e}`));
   $('#jp').textContent=`${pick||'Pilih namamu dulu'}: jaga ${len} jam, dari ${pad(s)}:00 sampai ${e<=s?'besok ':''}${pad(e)}:00`;
 }
-function openJ(s=6,e=14){$('#jd').min=today;$('#jd').value=sel<today?today:sel;sH.value=s;eH.value=e%24;paint();$('#dj').showModal()}
+function openJ(s,e){if(s===undefined){s=sel==today?Math.min(new Date().getHours()+1,23):6;e=(s+8)%24}$('#jd').min=today;$('#jd').value=sel<today?today:sel;sH.value=s;eH.value=e%24;paint();$('#dj').showModal()}
 const paintK=()=>[...$('#kd').children].forEach(b=>b.classList.toggle('on',b.dataset.v==dok));
 
 $('#dj').addEventListener('change',paint);
@@ -181,7 +188,7 @@ $('#kok').onclick=async()=>{
   $('#kn').value='';go(o.date);$('#dk').close();
 };
 document.addEventListener('click',async e=>{
-  const t=e.target.closest('[data-d],[data-x],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close]');if(!t)return;
+  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-u],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close]');if(!t)return;
   const D=t.dataset;
   if('close' in D)t.closest('dialog').close();
   else if(D.d){sel=D.d;render()}
@@ -190,7 +197,8 @@ document.addEventListener('click',async e=>{
     while(s>0&&d[s-1]?.includes(n))s--;while(en<23&&d[en+1]?.includes(n))en++;
     if(confirm(`Batalkan jaga ${n} jam ${pad(s)}:00 sampai ${pad(en+1)}:00?`))apply(sel,Array.from({length:en-s+1},(_,k)=>s+k),n,false).catch(()=>alert('Gagal membatalkan. Coba lagi.'));
   }
-  else if(D.h)openJ(+D.h,+D.h+1);
+  else if(D.lane){const r=t.getBoundingClientRect(),h=+D.st+Math.floor((e.clientY-r.top)/RH);pick=D.lane;openJ(h,(h+1)%24)}
+  else if(D.u){pick=D.u;openJ()}
   else if(D.p){[sH.value,eH.value]=D.p.split('-');paint()}
   else if(D.n){pick=D.n;paint()}
   else if(D.v){dok=D.v;paintK()}

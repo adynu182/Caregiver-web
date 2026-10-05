@@ -52,7 +52,7 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 .tgh,.tgb{display:grid;grid-template-columns:42px repeat(6,minmax(0,1fr))}
 .tgh{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:#fff;padding-bottom:6px}
 .tgb{position:relative}
-.uh{min-height:44px;padding:0;font-size:11px;border-radius:10px;background:var(--c);color:#fff;margin:0 1px}
+.uh{min-height:44px;padding:0;font-size:11px;font-weight:700;border-radius:10px;background:var(--c);color:#fff;margin:0 1px;display:flex;align-items:center;justify-content:center}.plus{--c:var(--pri);font-size:16px}
 .tm{height:var(--rh);padding:5px 3px 0 0;font-size:11px;font-weight:700;text-align:right;color:var(--c);background:var(--b);border-bottom:2px solid #fff}
 .tm small{display:block;font-size:12px}
 .ln{position:relative;border-left:1px solid #dfe7ea;background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--rh) - 1px),#dfe7ea calc(var(--rh) - 1px) var(--rh))}
@@ -96,7 +96,12 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 
 <script type="module">
 import {firebaseConfig as C} from './firebase-config.js';
-const NAMES={Adi:'#2563eb',Indri:'#c026d3',Rendra:'#0f766e',Ranu:'#7c3aed',Teja:'#92400e',Tia:'#be123c'};
+const NAMES={Adi:    '#0072B2', // biru
+  Indri:  '#E69F00', // oranye
+  Rendra: '#009E73', // hijau kebiruan
+  Rani:   '#CC79A7', // pink/magenta lembut
+  Teja:   '#6A3D9A', // ungu tua
+  Tia:    '#D55E00'};
 const HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],BLN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
 const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -137,15 +142,17 @@ function cal(){
   $('#cal').innerHTML=h;
 }
 function tl(){
-  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1,st=sel<today?24:Math.max(nowH,0),N=24-st,names=Object.keys(NAMES);let low=0,hrs='',lanes='';
-  for(let i=st;i<24;i++){const k=Math.min((d[i]||[]).length,2);if(k<2)low++;hrs+=`<div class="tm ${['bd','wn','ok'][k]}">${pad(i)}:00<small>${k<2?k+'/2':'✓'}</small></div>`}
+  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1,st=sel<today?24:Math.max(nowH,0),N=24-st;
+  const names=Object.keys(NAMES).filter(n=>Array.from({length:N},(_,k)=>d[st+k]).some(a=>a?.includes(n)));let low=0,hrs='',lanes='';
+  for(let i=st;i<24;i++){const k=Math.min((d[i]||[]).length,2);if(k<2)low++;hrs+=`<div class="tm ${['bd','wn','ok'][k]}">${pad(i)}:00</div>`}
   names.forEach(n=>{let ev='';
     for(let i=st;i<24;i++){if(!d[i]?.includes(n))continue;let e=i;while(e<23&&d[e+1]?.includes(n))e++;
       ev+=`<button class="ev" style="top:${(i-st)*RH}px;height:${(e-i+1)*RH}px;--c:${NAMES[n]};--g:${NAMES[n]}2e" data-x="${i}|${n}"><b>Jaga</b><small>${pad(i)}-${pad(e+1)}</small></button>`;i=e}
     lanes+=`<div class="ln" data-lane="${n}" data-st="${st}">${ev}</div>`});
   const ks=S.kontrol.filter(c=>c.date==sel).map(c=>`<div class="kd">🩺 <b>Kontrol dokter ${esc(c.dokter)} jam ${esc(c.time)}</b>${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</div>`).join('');
-  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(sel<today?'<p class="sub">Hari ini sudah lewat, jadwalnya disembunyikan.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang di ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">Angka di kiri = jumlah orang yang jaga (minimal 2). Ketuk nama atau kolom kosong untuk ikut jaga, ketuk kotak berwarna untuk membatalkan.${nowH>0?' Jam yang sudah lewat disembunyikan.':''}</p>`);
-  $('#tl').innerHTML=N?`<div class="tgh"><div></div>${names.map(n=>`<button class="uh" data-u="${n}" style="--c:${NAMES[n]}">${n}</button>`).join('')}</div><div class="tgb" style="height:${N*RH}px"><div>${hrs}</div>${lanes}${nowH>=0?`<div class="nowl" style="top:${new Date().getMinutes()/60*RH}px"></div>`:''}</div>`:'';
+  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(sel<today?'<p class="sub">Hari ini sudah lewat, jadwalnya disembunyikan.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang di ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">Warna jam di kiri: hijau = sudah 2 orang atau lebih, kuning = kurang 1 orang, merah = belum ada. Ketuk ＋ untuk ikut jaga, ketuk kotak berwarna untuk membatalkan.${nowH>0?' Jam yang sudah lewat disembunyikan.':''}</p>`);
+  const g=`grid-template-columns:42px repeat(${names.length},minmax(0,1fr)) ${names.length?'46px':'1fr'}`;
+  $('#tl').innerHTML=N?`<div class="tgh" style="${g}"><div></div>${names.map(n=>`<div class="uh" style="--c:${NAMES[n]}">${n}</div>`).join('')}<button class="uh plus" data-add>${names.length?'＋':'＋ Ikut jaga'}</button></div><div class="tgb" style="height:${N*RH}px;${g}"><div>${hrs}</div>${lanes}<div class="ln" data-lane="+" data-st="${st}">${names.length?'':'<p class="sub" style="padding:8px">Belum ada yang jaga. Ketuk tombol ＋ di atas untuk menambah jadwal.</p>'}</div>${nowH>=0?`<div class="nowl" style="top:${new Date().getMinutes()/60*RH}px"></div>`:''}</div>`:'';
 }
 function sc(){
   const t=Object.fromEntries(Object.keys(NAMES).map(n=>[n,0])),nh=new Date().getHours();
@@ -189,7 +196,7 @@ $('#kok').onclick=async()=>{
   $('#kn').value='';go(o.date);$('#dk').close();
 };
 document.addEventListener('click',async e=>{
-  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-u],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close]');if(!t)return;
+  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-add],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close]');if(!t)return;
   const D=t.dataset;
   if('close' in D)t.closest('dialog').close();
   else if(D.d){sel=D.d;render()}
@@ -198,8 +205,8 @@ document.addEventListener('click',async e=>{
     while(s>0&&d[s-1]?.includes(n))s--;while(en<23&&d[en+1]?.includes(n))en++;
     if(confirm(`Batalkan jaga ${n} jam ${pad(s)}:00 sampai ${pad(en+1)}:00?`))apply(sel,Array.from({length:en-s+1},(_,k)=>s+k),n,false).catch(()=>alert('Gagal membatalkan. Coba lagi.'));
   }
-  else if(D.lane){const r=t.getBoundingClientRect(),h=+D.st+Math.floor((e.clientY-r.top)/RH);pick=D.lane;openJ(h,(h+1)%24)}
-  else if(D.u){pick=D.u;openJ()}
+  else if(D.lane){const r=t.getBoundingClientRect(),h=+D.st+Math.floor((e.clientY-r.top)/RH);pick='';openJ(h,(h+1)%24)}
+  else if('add' in D){pick='';openJ()}
   else if(D.p){[sH.value,eH.value]=D.p.split('-');paint()}
   else if(D.n){pick=D.n;paint()}
   else if(D.v){dok=D.v;paintK()}

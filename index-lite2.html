@@ -111,7 +111,7 @@ const NAMES={Adi:    '#0072B2', // biru
   Rani:   '#CC79A7', // pink/magenta lembut
   Teja:   '#6A3D9A', // ungu tua
   Tia:    '#D55E00'};
-const KT={Syaraf:{n:'Dokter Syaraf',i:'🧠',c:'#4338CA',b:'#e6e5fb'},
+const KT={Saraf:{n:'Dokter Saraf',i:'🧠',c:'#4338CA',b:'#e6e5fb'},
   Jantung:{n:'Dokter Jantung',i:'❤️',c:'#BE123C',b:'#fde3ea'},
   Fisioterapi:{n:'Fisioterapi',i:'🦵',c:'#0F766E',b:'#d3f1ea'}};
 const kt=d=>KT[d]||{n:'Dokter '+d,i:'🩺',c:'#0b5d73',b:'#e1ebee'};
@@ -122,7 +122,7 @@ const parse=s=>{const[a,b,c]=s.split('-');return new Date(a,b-1,c)};
 const tgl=s=>{const d=parse(s);return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]}`};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>`&#${c.charCodeAt(0)};`);
 const today=ymd(new Date());
-let S={slots:{},kontrol:[]},sel=today,view=parse(today),pick=localStorage.nama||'',dok='Syaraf',cloud=false,db,F,unsub;
+let S={slots:{},kontrol:[]},sel=today,view=parse(today),pick=localStorage.nama||'',dok='Saraf',cloud=false,db,F,unsub;
 view.setDate(1);
 const save=()=>localStorage.jagamamah=JSON.stringify(S);
 const cnt=(d,h)=>(S.slots[d]?.[h]||[]).length;
@@ -176,7 +176,7 @@ function sc(){
 function kc(){
   const up=S.kontrol.filter(c=>c.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)),c=up[0],dd=c&&Math.round((parse(c.date)-parse(today))/864e5);
   $('#kc').className='card'+(c&&dd<=2?' soon':'');
-  $('#kc').innerHTML=(c?`<b>Kontrol dokter berikutnya</b><div class="big">${esc(kt(c.dokter).n)}, ${dd?dd==1?'besok':dd+' hari lagi':'hari ini'}</div><p>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</p>`:'<b>Belum ada jadwal kontrol dokter</b>')+'<button data-k>Lihat dan tambah jadwal kontrol</button>';
+  $('#kc').innerHTML=(c?`<b>Kontrol dokter berikutnya</b><div class="big">${esc(kt(c.dokter).n)}, ${dd?dd==1?'besok':dd+' hari lagi':'hari ini'}</div><p>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</p>`:'<b>Belum ada jadwal kontrol dokter</b>')+'<button data-k>Lihat & tambah jadwal kontrol</button>';
   $('#kl').innerHTML=up.map(c=>{const t=kt(c.dokter),n=Math.round((parse(c.date)-parse(today))/864e5);return `<div class="kk" style="--c:${t.c};--b:${t.b}"><span class="kic">${t.i}</span><div class="kbd"><b>${esc(t.n)}</b><div class="kdt">${tgl(c.date)}</div><div class="kwr"><span class="kwh">${n?n==1?'Besok':n+' hari lagi':'Hari ini'}</span><b>Jam ${esc(c.time)}</b></div>${c.catatan?`<div class="kno">📝 ${esc(c.catatan)}</div>`:''}</div><button data-del="${esc(c.id)}" aria-label="Hapus">🗑</button></div>`}).join('')||'<p class="sub">Belum ada jadwal.</p>';
 }
 function sb(){

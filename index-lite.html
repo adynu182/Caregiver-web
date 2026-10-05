@@ -83,7 +83,7 @@ const cnt=t=>new Set((slots.get(t)||[]).map(x=>x.name)).size;
 // potongan jam per bagian hari (6 jam) yang jumlah penjaganya tepat = level
 function chunks(level){const out=[],n=now();
  for(let i=0;i<14;i++)for(let p=0;p<4;p++){const a=day0(Date.now())+i*D+p*6*H;let c=null;
-  for(let t=a;t<a+6*H;t+=H){if(t>=n&&cnt(t)==level){if(c)c.e=t+H;else out.push(c={s:t,e:t+H,p})}else c=null}}
+  for(let t=a;t<a+6*H;t+=H){if(t>=n&&cnt(t)==level&&!(level&&(slots.get(t)||[]).some(x=>x.name==me))){if(c)c.e=t+H;else out.push(c={s:t,e:t+H,p})}else c=null}}
  return out}
 const who=d=>{const m=new Map();shifts.forEach(s=>{if(s.start<d+D&&s.end>d)m.set(s.name,[...(m.get(s.name)||[]),[Math.max(s.start,d),Math.min(s.end,d+D)]])});return[...m]};
 const mg=r=>{r.sort((a,b)=>a[0]-b[0]);const o=[];r.forEach(x=>{const l=o[o.length-1];if(l&&x[0]<=l[1])l[1]=Math.max(l[1],x[1]);else o.push([...x])});return o};
@@ -98,17 +98,17 @@ function draw(){
   card=(c,k)=>`<div class="card ${k}"><div><b>${PART[c.p][0]} ${dl(c.s)} · ${PART[c.p][1]}</b><small>${tm(c.s)} – ${te(c.e)} · ${(c.e-c.s)/H} jam</small></div><button data-a="${c.s}" data-b="${c.e}">${k=="e"?"Saya jaga":"Saya temani"}</button></div>`,
   mrow=s=>`<div class="row mine"><div><b>${dl(s.start)}</b><small>${tm(s.start)} – ${te(s.end)}${day0(s.end-1)>day0(s.start)?" (besok)":""}</small></div><button class="g" data-x="${s.id}">Batal</button></div>`;
  $("#hi").textContent="👤 "+(me||"Pilih nama");
- let h=on.length?`<div class="now"><b>Sekarang dijaga ${on.map(x=>esc(x)+(x==me?" (Anda)":"")).join(" & ")}</b><small>sampai ${at(Math.min(...on.map(until)))}</small></div>`
+ const nowc=on.length?`<div class="now"><b>Sekarang dijaga ${on.map(x=>esc(x)+(x==me?" (Anda)":"")).join(" & ")}</b><small>sampai ${at(Math.min(...on.map(until)))}</small></div>`
   :`<div class="now e"><b>Sekarang belum ada yang jaga</b></div>`;
- h+=E.length?`<h2>Perlu dijaga · ${eh} jam</h2><small>Ketuk “Saya jaga” pada jam yang bisa Anda isi.</small>`+E.slice(0,4).map(c=>card(c,"e")).join("")
+ let h=E.length?`<h2>Perlu dijaga · ${eh} jam</h2><small>Ketuk “Saya jaga” pada jam yang bisa Anda isi.</small>`+E.slice(0,4).map(c=>card(c,"e")).join("")
   +(E.length>4?`<details id="e"${op("e")}><summary>Lihat ${E.length-4} lainnya</summary>${E.slice(4).map(c=>card(c,"e")).join("")}</details>`:"")
   :`<div class="now"><b>Semua jam sudah ada yang jaga 🎉</b><small>Terima kasih sudah menjaga ${PASIEN}.</small></div>`;
  if(W.length)h+=`<details id="w"${op("w")}><summary>Baru 1 penjaga (${W.length}) · boleh ditemani</summary>${W.map(c=>card(c,"w")).join("")}</details>`;
  if(mine.length)h+=`<h2>Jadwal Anda</h2>`+mine.slice(0,3).map(mrow).join("")+(mine.length>3?`<details id="m"${op("m")}><summary>Lihat ${mine.length-3} lainnya</summary>${mine.slice(3).map(mrow).join("")}</details>`:"");
- h+=`<details id="k"${op("k")}><summary>Lihat Semua yang Jaga</summary>`+[...Array(7)].map((_,i)=>{const d=day0(Date.now())+i*D,w=who(d);
+ const wk=`<details id="k"${op("k")}><summary>Lihat Semua yang Jaga</summary>`+[...Array(7)].map((_,i)=>{const d=day0(Date.now())+i*D,w=who(d);
   return `<div class="row"><b>${dl(d)}</b><div>${w.length?w.map(([nm,r])=>`<small><b style="font-size:16px;color:var(--ink)">${esc(nm)}</b> ${mg(r).map(([a,b])=>tm(a)+"–"+te(b)).join(", ")}</small>`).join(""):`<small>Belum ada</small>`}</div></div>`}).join("")+`</details>`;
  h+=`<div class="acts">${E.length?`<button class="sec" id="wa">Kabari grup WA</button>`:""}<button class="sec" id="cu">Pilih jam sendiri</button></div>`;
- $("#v").innerHTML=h}
+ $("#v").innerHTML=nowc+wk+h}
 
 function toast(m,l,f){const e=$("#toast");e.innerHTML=`<span>${esc(m)}</span>`+(l?`<button>${esc(l)}</button>`:"");e.hidden=false;
  if(l)e.lastChild.onclick=()=>{e.hidden=true;f()};clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,l?7000:3500)}

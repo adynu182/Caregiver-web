@@ -60,12 +60,14 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 .ev b{display:block;font-size:11px}.ev small{display:block;font-size:10px}
 .nowl{position:absolute;left:0;right:0;height:2px;background:#e11d48;z-index:5;pointer-events:none}
 .nowl::before{content:"Sekarang";position:absolute;left:0;top:-8px;padding:0 2px;font-size:9px;font-weight:700;color:#e11d48;background:#fff}
+#sb{border-left:10px solid var(--c)}.sbn{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nm{padding:8px 16px;border-radius:22px;color:#fff;font-weight:700;font-size:18px}
 </style>
 </head>
 <body>
 <header><h1>Jadwal Jaga Mamah</h1><p class="sub">Setiap jam harus ada minimal 2 orang yang jaga.</p></header>
 <div id="mode" hidden>Mode contoh: Firebase belum diisi, data hanya tersimpan di HP ini. Isi file <b>firebase-config.js</b> agar jadwal terlihat oleh semua.</div>
 <section id="kc" class="card"></section>
+<section class="card" id="sb"></section>
 <section class="card">
   <div class="ch"><button id="pv" aria-label="Bulan sebelumnya">‹</button><h2 id="mt"></h2><button id="nx" aria-label="Bulan berikutnya">›</button></div>
   <div class="grid" id="cal"></div>
@@ -158,7 +160,7 @@ function sc(){
   const t=Object.fromEntries(Object.keys(NAMES).map(n=>[n,0])),nh=new Date().getHours();
   for(const[d,v]of Object.entries(S.slots))if(d>=today)for(const[h,a]of Object.entries(v))if(d>today||+h>=nh)a.forEach(n=>{if(n in t)t[n]++});
   const mx=Math.max(1,...Object.values(t));
-  $('#sc').innerHTML='<h2>Sisa jam jaga</h2><p class="sub">Jam jaga yang masih akan dijalani, dihitung dari sekarang.</p>'+Object.entries(t).map(([n,v])=>`<div class="meter"><b style="color:${NAMES[n]}">${n}</b><div><i style="width:${v/mx*100}%;background:${NAMES[n]}"></i></div><span>${v?v+' jam lagi':'belum ada'}</span></div>`).join('');
+  $('#sc').innerHTML='<h2>Sisa jam jaga</h2><p class="sub">Jam jaga yang masih akan dijalani, dihitung dari sekarang.</p>'+Object.entries(t).map(([n,v])=>`<div class="meter"><b style="color:${NAMES[n]}">${n}</b><div><i style="width:${v/mx*100}%;background:${NAMES[n]}"></i></div><span>${v?v+' jam':'belum ada'}</span></div>`).join('');
 }
 function kc(){
   const up=S.kontrol.filter(c=>c.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)),c=up[0],dd=c&&Math.round((parse(c.date)-parse(today))/864e5);
@@ -166,7 +168,12 @@ function kc(){
   $('#kc').innerHTML=(c?`<b>Kontrol dokter berikutnya</b><div class="big">Dokter ${esc(c.dokter)}, ${dd?dd==1?'besok':dd+' hari lagi':'hari ini'}</div><p>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</p>`:'<b>Belum ada jadwal kontrol dokter</b>')+'<button data-k>Lihat dan tambah jadwal kontrol</button>';
   $('#kl').innerHTML=up.map(c=>`<div class="ki"><span><b>Dokter ${esc(c.dokter)}</b><br>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>${esc(c.catatan)}`:''}</span><button data-del="${esc(c.id)}" aria-label="Hapus">🗑</button></div>`).join('')||'<p class="sub">Belum ada jadwal.</p>';
 }
-function render(){cal();tl();kc();sc()}
+function sb(){
+  const n=new Date(),h=n.getHours(),a=(S.slots[today]||{})[h]||[],k=Math.min(a.length,2),c=['bd','wn','ok'][k];
+  $('#sb').className='card '+c;
+  $('#sb').innerHTML=`<h2>Yang Sekarang Standby</h2><p class="sub">Sekarang jam ${pad(h)}:${pad(n.getMinutes())}</p><div class="sbn">${a.map(x=>`<span class="nm" style="background:${NAMES[x]||'#555'}">${esc(x)}</span>`).join('')||'<b>Belum ada yang jaga</b>'}</div><span class="pill ${c}">${['Kosong, segera cari penjaga','Kurang 1 orang','Aman, ada '+a.length+' orang'][k]}</span>`;
+}
+function render(){sb();cal();tl();kc();sc()}
 
 const sH=$('#js'),eH=$('#je');
 sH.innerHTML=eH.innerHTML=Array.from({length:24},(_,h)=>`<option value="${h}">${pad(h)}:00</option>`).join('');
@@ -227,6 +234,7 @@ if(!C?.projectId||String(C.projectId).startsWith('ISI')){
   F.onSnapshot(F.query(F.collection(db,'jadwal'),F.where(F.documentId(),'>=',today)),q=>{q.forEach(d=>S.slots[d.id]=d.data().slots||{});render()});
 }
 render();
+setInterval(render,20000);
 </script>
 </body>
 </html>

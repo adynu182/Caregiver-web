@@ -165,7 +165,7 @@ function mv(n){view.setMonth(view.getMonth()+n);const m=ymd(view).slice(0,7);sel
 const dots=k=>Object.keys(NAMES).filter(n=>Object.values(S.slots[k]||{}).some(a=>a.includes(n))).map(n=>`<i style="background:${NAMES[n]}"></i>`).join('');
 function cal(){
   const y=view.getFullYear(),m=view.getMonth(),f=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
-  $('#lgd').innerHTML='<span>kode warna:</span>'+Object.keys(NAMES).map(n=>`<span><i style="background:${NAMES[n]}"></i>${n}</span>`).join('');$('#mt').textContent=`${BLN[m]} ${y}`;
+  $('#lgd').innerHTML='<span>Pilih tanggal diatas untuk lihat yang jaga. </span>'+Object.keys(NAMES).map(n=>`<span><i style="background:${NAMES[n]}"></i>${n}</span>`).join('');$('#mt').textContent=`${BLN[m]} ${y}`;
   let h=['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(d=>`<div class="dow">${d}</div>`).join('')+'<div></div>'.repeat(f);
   for(let d=1;d<=n;d++){const k=`${y}-${pad(m+1)}-${pad(d)}`;
     h+=`<button class="day${k<today?' pd':''}${k==sel?' sel':''}${k==today?' today':''}" data-d="${k}"><b>${d}</b><span class="dots">${dots(k)}</span>${S.kontrol.some(c=>c.date==k)?'<small>🩺</small>':''}</button>`}
@@ -190,7 +190,7 @@ function kr(){
     const k=Math.min((d[h]||[]).length,2);if(k>1)continue;
     const l=g[g.length-1];if(l&&l.k==k&&l.e==h)l.e=h+1;else g.push({k,s:h,e:h+1});
   }
-  $('#kr').innerHTML='<h2>Jam yang butuh penjaga</h2><p class="sub">Kosong atau baru dijaga 1 orang, '+tgl(sel)+'.</p>'+
+  $('#kr').innerHTML='<h2>Jam kosong atau baru 1 orang</h2><p class="sub">'+tgl(sel)+'.</p>'+
     (sel<today?'<p class="sub" style="margin-top:10px">Tanggal ini sudah lewat.</p>':
     g.length?g.map(x=>`<div class="gp ${['bd','wn'][x.k]}"><div><b>${x.k?'Dijaga 1 orang':'Kosong'}, ${x.e-x.s} jam</b><div class="gt">${pad(x.s)}:00 - ${pad(x.e%24)}:00</div></div><button data-g="${x.s}|${x.e}">Ambil jadwal</button></div>`).join(''):
     '<span class="pill ok">Lengkap, semua jam sudah ada 2 orang</span>');

@@ -70,6 +70,13 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 .nowl{position:absolute;left:0;right:0;height:2px;background:#e11d48;z-index:5;pointer-events:none}
 .nowl::before{content:"Sekarang";position:absolute;left:0;top:-8px;padding:0 2px;font-size:9px;font-weight:700;color:#e11d48;background:#fff}
 #sb{border-left:10px solid var(--c)}.sbn{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nm{padding:8px 16px;border-radius:22px;color:#fff;font-weight:700;font-size:18px}
+[hidden]{display:none!important}
+button:disabled{opacity:.5;pointer-events:none}
+#ct{display:block;width:100%;min-height:50px;margin-top:10px;padding:10px 12px;border:2px solid transparent;border-radius:12px;background:#f3f7f8;color:var(--ink);font:inherit;line-height:1.4;resize:none;overflow:hidden}
+#cn.editing #ct{background:#fff;border-color:var(--pri)}
+#ce{width:100%;margin-top:10px}
+#cn .two{margin-top:10px}
+body.ed .bar{display:none}
 </style>
 </head>
 <body>
@@ -83,6 +90,12 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
   <div class="lg"><span class="sub lgd" id="lgd"></span><button id="td">Hari ini</button></div>
 </section>
 <section class="card" style="padding:16px 8px"><div id="dh" style="padding:0 8px"></div><div id="tl"></div></section>
+<section class="card" id="cn">
+  <h2 id="cnh"></h2>
+  <textarea id="ct" rows="1" maxlength="2000" aria-label="Catatan" readonly></textarea>
+  <button id="ce"></button>
+  <div class="two" id="cx" hidden><button id="cb">Batal</button><button class="pri" id="cs">Simpan</button></div>
+</section>
 <section class="card" id="sc"></section>
 <nav class="bar"><button class="pri" id="bj">＋ Ambil jadwal jaga</button></nav>
 
@@ -124,7 +137,7 @@ const parse=s=>{const[a,b,c]=s.split('-');return new Date(a,b-1,c)};
 const tgl=s=>{const d=parse(s);return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]}`};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>`&#${c.charCodeAt(0)};`);
 const today=ymd(new Date());
-let S={slots:{},kontrol:[]},sel=today,view=parse(today),pick=localStorage.nama||'',dok='Saraf',cloud=false,db,F,unsub;
+let S={slots:{},kontrol:[],catatan:{}},sel=today,view=parse(today),pick=localStorage.nama||'',dok='Saraf',cloud=false,db,F,unsub,ed=null,wm='',nl=true,nerr=false;
 view.setDate(1);
 const save=()=>localStorage.jagamamah=JSON.stringify(S);
 const cnt=(d,h)=>(S.slots[d]?.[h]||[]).length;
@@ -187,7 +200,31 @@ function sb(){
   $('#sb').className='card '+c;
   $('#sb').innerHTML=`<h2>Yang Sekarang Standby</h2><p class="sub">Sekarang jam ${pad(h)}:${pad(n.getMinutes())}</p><div class="sbn">${a.map(x=>`<span class="nm" style="background:${NAMES[x]||'#555'}">${esc(x)}</span>`).join('')||'<b>Belum ada yang jaga</b>'}</div><span class="pill ${c}">${['Kosong, segera cari penjaga','Kurang 1 orang','Aman, ada '+a.length+' orang'][k]}</span>`;
 }
-function render(){sb();cal();tl();kc();sc()}
+function grow(){
+  const t=$('#ct'),y=scrollY;
+  t.style.height='auto';
+  t.style.height=t.scrollHeight+t.offsetHeight-t.clientHeight+'px';
+  if(scrollY!=y)scrollTo(0,y);
+}
+function cn(){
+  const d=ed||sel,t=$('#ct'),v=S.catatan[d]||'';
+  document.body.classList.toggle('ed',!!ed);$('#cn').classList.toggle('editing',!!ed);
+  $('#cnh').textContent='Catatan '+(d==today?'hari ini':tgl(d));
+  t.readOnly=!ed;
+  t.placeholder=ed?'Tulis catatan di sini…':nerr?'Catatan gagal dimuat. Cek internet.':nl?'Belum ada catatan.':'Memuat catatan…';
+  if(!ed&&t.value!==v){t.value=v;grow()}
+  const b=$('#ce');b.hidden=!!ed;b.disabled=!nl;b.textContent=v?'✏️ Edit':'✏️ Tulis';
+  $('#cx').hidden=!ed;
+}
+function watch(){
+  if(!cloud)return;
+  const m=ymd(view).slice(0,7);if(m==wm)return;
+  wm=m;nl=false;nerr=false;unsub?.();
+  unsub=F.onSnapshot(F.query(F.collection(db,'jadwal'),F.where(F.documentId(),'>=',m+'-01'),F.where(F.documentId(),'<=',m+'-31')),
+    q=>{const o={};q.forEach(d=>{const x=d.data().catatan;if(x)o[d.id]=x});S.catatan=o;nl=true;nerr=false;render()},
+    ()=>{nl=true;nerr=true;render()});
+}
+function render(){watch();sb();cal();tl();kc();cn();sc()}
 
 const sH=$('#js'),eH=$('#je');
 sH.innerHTML=eH.innerHTML=Array.from({length:24},(_,h)=>`<option value="${h}">${pad(h)}:00</option>`).join('');
@@ -216,6 +253,27 @@ $('#kok').onclick=async()=>{
   try{if(cloud)await F.addDoc(F.collection(db,'kontrol'),o);else{S.kontrol.push({id:Date.now()+'',...o});save()}}catch{return alert('Gagal menyimpan. Cek internet lalu coba lagi.')}
   $('#kn').value='';go(o.date);$('#dk').close();
 };
+$('#ct').addEventListener('input',grow);
+addEventListener('resize',grow);
+document.fonts?.ready.then(grow);
+$('#ce').onclick=()=>{
+  ed=sel;cn();
+  const t=$('#ct');t.focus();t.setSelectionRange(t.value.length,t.value.length);grow();
+};
+$('#cb').onclick=()=>{
+  if($('#ct').value.trim()!==(S.catatan[ed]||'')&&!confirm('Tulisan belum disimpan. Buang perubahan?'))return;
+  ed=null;cn();
+};
+$('#cs').onclick=async()=>{
+  const b=$('#cs'),d=ed,text=$('#ct').value.trim();
+  b.disabled=true;
+  try{
+    if(cloud)await F.setDoc(F.doc(db,'jadwal',d),{catatan:text},{merge:true});
+    if(text)S.catatan[d]=text;else delete S.catatan[d];
+    if(!cloud)save();
+  }catch{b.disabled=false;return alert('Gagal menyimpan. Cek internet lalu coba lagi.')}
+  b.disabled=false;ed=null;render();
+};
 document.addEventListener('click',async e=>{
   const t=e.target.closest('[data-d],[data-x],[data-lane],[data-add],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close]');if(!t)return;
   const D=t.dataset;
@@ -240,6 +298,7 @@ document.addEventListener('click',async e=>{
 if(!C?.projectId||String(C.projectId).startsWith('ISI')){
   $('#mode').hidden=false;
   try{S={...S,...JSON.parse(localStorage.jagamamah||'{}')}}catch{}
+  if(!S.catatan||Array.isArray(S.catatan))S.catatan={};
 }else{
   const V='10.12.2',A=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
   F=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);

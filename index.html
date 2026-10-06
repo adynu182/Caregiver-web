@@ -30,7 +30,7 @@ button:active{border-bottom-width:2px;transform:translateY(4px);box-shadow:none}
 .day{position:relative;min-height:58px;padding:4px 0;background:#f3f7f8;border-radius:12px;font-weight:400}
 .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;margin-top:3px;padding:0 3px}.dots i{width:7px;height:7px;border-radius:50%}
 .lgd{display:flex;flex-wrap:wrap;gap:4px 10px}.lgd i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
-.day small{position:absolute;top:0;right:1px;font-size:11px}
+.day small{position:absolute;top:0;right:1px;font-size:11px}.day small.cm{right:auto;left:1px}
 .day.sel{outline:3px solid var(--pri);background:#fff}
 .day.today b{background:var(--pri);color:#fff;border-radius:10px;padding:0 6px}
 .ok{--c:var(--ok);--b:var(--okb)}.wn{--c:var(--wn);--b:var(--wnb)}.bd{--c:var(--bd);--b:var(--bdb)}.pd{--c:#b6c3c8}.day.pd{opacity:.6}
@@ -44,7 +44,7 @@ button:active{border-bottom-width:2px;transform:translateY(4px);box-shadow:none}
 dialog{border:0;border-radius:26px 26px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:520px;margin:auto auto 0;max-height:94dvh;color:var(--ink)}
 dialog::backdrop{background:#000a}
 label{display:block;font-weight:700;margin:14px 0 6px}
-input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;border-radius:12px;padding:6px 10px;background:#fff}
+input,select,textarea{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;border-radius:12px;padding:6px 10px;background:#fff}
 .opts{display:flex;flex-wrap:wrap;gap:8px}
 .opts button{--c:var(--pri);flex:1 0 30%;border:3px solid var(--c);border-bottom-width:8px;background:#fff}.opts button:active{border-bottom-width:3px}
 .opts .on{background:var(--c);color:#fff}
@@ -70,6 +70,14 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 .nowl{position:absolute;left:0;right:0;height:2px;background:#e11d48;z-index:5;pointer-events:none}
 .nowl::before{content:"Sekarang";position:absolute;left:0;top:-8px;padding:0 2px;font-size:9px;font-weight:700;color:#e11d48;background:#fff}
 #sb{border-left:10px solid var(--c)}.sbn{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nm{padding:8px 16px;border-radius:22px;color:#fff;font-weight:700;font-size:18px}
+textarea{display:block;min-height:96px;padding:10px;line-height:1.4;resize:vertical}
+.ce{--c:#55696f;--g:#55696f1f;margin:10px 0;padding:10px 8px 10px 12px;background:var(--g);border-left:8px solid var(--c);border-radius:16px}
+.ceh{display:flex;align-items:center;gap:8px}.ceh b{font-size:17px}.ceh span{flex:1;color:var(--mut);font-size:15px}
+.ceh button{flex:none;width:44px;min-height:40px;padding:0;border-bottom-width:4px;background:#fff}
+.cex{margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere}
+#cw button{min-height:44px;flex:1 0 28%;padding:0 6px;font-size:16px}
+#cs{width:100%;margin-top:12px}
+body:has(#ct:focus) .bar{display:none}
 </style>
 </head>
 <body>
@@ -83,6 +91,15 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
   <div class="lg"><span class="sub lgd" id="lgd"></span><button id="td">Hari ini</button></div>
 </section>
 <section class="card" style="padding:16px 8px"><div id="dh" style="padding:0 8px"></div><div id="tl"></div></section>
+<section class="card" id="cn">
+  <h2 id="cnh"></h2>
+  <p class="sub">Tulis kejadian pada hari itu: makan, obat, tidur, atau kondisi Mamah. Pilih tanggal lain di kalender untuk melihat catatan hari lain (tanda 📝).</p>
+  <div id="cl"></div>
+  <label>Siapa yang menulis?</label><div class="opts" id="cw"></div>
+  <label for="ct" id="ctl"></label>
+  <textarea id="ct" rows="3" maxlength="1000" placeholder="Contoh: Mamah makan siang habis, minum obat jam 12."></textarea>
+  <button class="pri" id="cs">Simpan catatan</button>
+</section>
 <section class="card" id="sc"></section>
 <nav class="bar"><button class="pri" id="bj">＋ Ambil jadwal jaga</button></nav>
 
@@ -124,7 +141,7 @@ const parse=s=>{const[a,b,c]=s.split('-');return new Date(a,b-1,c)};
 const tgl=s=>{const d=parse(s);return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]}`};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>`&#${c.charCodeAt(0)};`);
 const today=ymd(new Date());
-let S={slots:{},kontrol:[]},sel=today,view=parse(today),pick=localStorage.nama||'',dok='Saraf',cloud=false,db,F,unsub;
+let S={slots:{},kontrol:[],catatan:[]},sel=today,view=parse(today),pick=localStorage.nama||'',dok='Saraf',cloud=false,db,F,unsub,dr={},ldate='',nok=true,nerr='',wm='',wr=localStorage.nama||'';
 view.setDate(1);
 const save=()=>localStorage.jagamamah=JSON.stringify(S);
 const cnt=(d,h)=>(S.slots[d]?.[h]||[]).length;
@@ -152,8 +169,9 @@ function cal(){
   const y=view.getFullYear(),m=view.getMonth(),f=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
   $('#lgd').innerHTML='<span>Titik = yang jaga:</span>'+Object.keys(NAMES).map(n=>`<span><i style="background:${NAMES[n]}"></i>${n}</span>`).join('');$('#mt').textContent=`${BLN[m]} ${y}`;
   let h=['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(d=>`<div class="dow">${d}</div>`).join('')+'<div></div>'.repeat(f);
+  const nd=new Set(S.catatan.map(c=>c.date));
   for(let d=1;d<=n;d++){const k=`${y}-${pad(m+1)}-${pad(d)}`;
-    h+=`<button class="day${k<today?' pd':''}${k==sel?' sel':''}${k==today?' today':''}" data-d="${k}"><b>${d}</b><span class="dots">${dots(k)}</span>${S.kontrol.some(c=>c.date==k)?'<small>🩺</small>':''}</button>`}
+    h+=`<button class="day${k<today?' pd':''}${k==sel?' sel':''}${k==today?' today':''}" data-d="${k}"><b>${d}</b><span class="dots">${dots(k)}</span>${S.kontrol.some(c=>c.date==k)?'<small>🩺</small>':''}${nd.has(k)?'<small class="cm">📝</small>':''}</button>`}
   $('#cal').innerHTML=h;
 }
 function tl(){
@@ -187,7 +205,23 @@ function sb(){
   $('#sb').className='card '+c;
   $('#sb').innerHTML=`<h2>Yang Sekarang Standby</h2><p class="sub">Sekarang jam ${pad(h)}:${pad(n.getMinutes())}</p><div class="sbn">${a.map(x=>`<span class="nm" style="background:${NAMES[x]||'#555'}">${esc(x)}</span>`).join('')||'<b>Belum ada yang jaga</b>'}</div><span class="pill ${c}">${['Kosong, segera cari penjaga','Kurang 1 orang','Aman, ada '+a.length+' orang'][k]}</span>`;
 }
-function render(){sb();cal();tl();kc();sc()}
+const wk=c=>{if(!c.at)return'';const t=new Date(c.at),h=`${pad(t.getHours())}:${pad(t.getMinutes())}`;return ymd(t)==c.date?`Jam ${h}`:`Ditulis ${t.getDate()} ${BLN[t.getMonth()].slice(0,3)}, ${h}`};
+function cn(){
+  const ta=$('#ct'),L=S.catatan.filter(c=>c.date==sel).sort((a,b)=>a.at-b.at),hari=sel==today?'hari ini':tgl(sel);
+  if(ldate!=sel){ldate=sel;ta.value=dr[sel]||''}
+  $('#cnh').textContent='Catatan '+hari;$('#ctl').textContent='Tulis catatan untuk '+hari;
+  const ne=nerr=='permission-denied'?'Catatan belum bisa dipakai karena Firebase belum mengizinkannya. Tambahkan aturan <b>catatan</b> di Firestore &gt; Rules (contohnya ada di firebase-config.js).':nerr?'Catatan gagal dimuat. Cek internet lalu coba lagi.':'';
+  $('#cl').innerHTML=(ne?`<div class="kd">${ne}</div>`:'')+(L.map(c=>{const k=NAMES[c.who]||'#55696f';return `<div class="ce" style="--c:${k};--g:${k}1f"><div class="ceh"><b>${esc(c.who||'')}</b><span>${wk(c)}</span><button data-cd="${esc(c.id)}" aria-label="Hapus catatan">🗑</button></div><div class="cex">${esc(c.text||'')}</div></div>`}).join('')||(ne?'':`<p class="sub">${nok?'Belum ada catatan di tanggal ini.':'Memuat catatan…'}</p>`));
+}
+function watch(){
+  if(!cloud)return;
+  const m=ymd(view).slice(0,7);if(m==wm)return;
+  wm=m;nok=false;nerr='';unsub?.();
+  unsub=F.onSnapshot(F.query(F.collection(db,'catatan'),F.where('date','>=',m+'-01'),F.where('date','<=',m+'-31')),
+    q=>{S.catatan=q.docs.map(d=>({id:d.id,...d.data()}));nok=true;nerr='';render()},
+    e=>{S.catatan=[];nok=true;nerr=e?.code||'error';render()});
+}
+function render(){watch();sb();cal();tl();kc();cn();sc()}
 
 const sH=$('#js'),eH=$('#je');
 sH.innerHTML=eH.innerHTML=Array.from({length:24},(_,h)=>`<option value="${h}">${pad(h)}:00</option>`).join('');
@@ -199,6 +233,7 @@ function paint(){
   $('#jp').textContent=`${pick||'Pilih namamu dulu'}: jaga ${len} jam, dari ${pad(s)}:00 sampai ${e<=s?'besok ':''}${pad(e)}:00`;
 }
 function openJ(s,e){if(s===undefined){s=sel==today?Math.min(new Date().getHours()+1,23):6;e=(s+8)%24}$('#jd').min=today;$('#jd').value=sel<today?today:sel;sH.value=s;eH.value=e%24;paint();$('#dj').showModal()}
+const paintW=()=>$('#cw').innerHTML=Object.keys(NAMES).map(n=>`<button data-w="${n}" class="${n==wr?'on':''}" style="--c:${NAMES[n]}">${n}</button>`).join('');paintW();
 const paintK=()=>$('#kd').innerHTML=Object.entries(KT).map(([k,t])=>`<button data-v="${k}" class="${k==dok?'on':''}" style="--c:${t.c}">${t.i}<br>${t.n.replace('Dokter ','Dr. ')}</button>`).join('');
 
 $('#dj').addEventListener('change',paint);
@@ -216,8 +251,18 @@ $('#kok').onclick=async()=>{
   try{if(cloud)await F.addDoc(F.collection(db,'kontrol'),o);else{S.kontrol.push({id:Date.now()+'',...o});save()}}catch{return alert('Gagal menyimpan. Cek internet lalu coba lagi.')}
   $('#kn').value='';go(o.date);$('#dk').close();
 };
+$('#ct').addEventListener('input',e=>{dr[sel]=e.target.value});
+$('#cs').onclick=async()=>{
+  const ta=$('#ct'),text=ta.value.trim(),date=sel;
+  if(!wr)return alert('Pilih namamu dulu ya.');
+  if(!text)return alert('Tulis catatannya dulu ya.');
+  const o={date,text,who:wr,at:Date.now()};
+  localStorage.nama=wr;ta.value='';delete dr[date];
+  try{if(cloud)await F.addDoc(F.collection(db,'catatan'),o);else{S.catatan.push({id:o.at+'',...o});save();render()}}
+  catch(x){dr[date]=text;if(sel==date)ta.value=text;alert(x?.code=='permission-denied'?'Firebase belum mengizinkan catatan. Tambahkan aturan "catatan" di Firestore > Rules (lihat firebase-config.js).':'Gagal menyimpan. Cek internet lalu coba lagi.')}
+};
 document.addEventListener('click',async e=>{
-  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-add],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close]');if(!t)return;
+  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-add],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close],[data-w],[data-cd]');if(!t)return;
   const D=t.dataset;
   if('close' in D)t.closest('dialog').close();
   else if(D.d){sel=D.d;render()}
@@ -234,6 +279,10 @@ document.addEventListener('click',async e=>{
   else if('k' in D){$('#kt').min=today;$('#kt').value=sel<today?today:sel;paintK();$('#dk').showModal()}
   else if(D.del&&confirm('Hapus jadwal kontrol ini?')){
     try{if(cloud)await F.deleteDoc(F.doc(db,'kontrol',D.del));else{S.kontrol=S.kontrol.filter(c=>c.id!=D.del);save();render()}}catch{alert('Gagal menghapus. Coba lagi.')}
+  }
+  else if(D.w){wr=D.w;paintW()}
+  else if(D.cd&&confirm('Hapus catatan ini?')){
+    try{if(cloud)await F.deleteDoc(F.doc(db,'catatan',D.cd));else{S.catatan=S.catatan.filter(c=>c.id!=D.cd);save();render()}}catch{alert('Gagal menghapus. Coba lagi.')}
   }
 });
 

@@ -38,7 +38,6 @@ button:active{border-bottom-width:2px;transform:translateY(4px);box-shadow:none}
 .lg button{min-height:40px}
 .pill{display:inline-block;padding:6px 12px;border-radius:20px;background:var(--b);color:var(--c);font-weight:700;margin:6px 0 4px}
 .kd{background:var(--wnb);border-radius:14px;padding:10px 12px;margin:8px 0}
-.meter{display:flex;align-items:center;gap:8px;margin:10px 0}.meter b{width:64px}.meter div{flex:1;height:14px;background:#e1ebee;border-radius:7px;overflow:hidden}.meter i{display:block;height:100%}.meter span{width:78px;text-align:right}
 .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(#eef3f500,var(--bg) 35%)}
 .bar button{width:100%;min-height:58px;font-size:19px;border-radius:18px}
 dialog{border:0;border-radius:26px 26px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:520px;margin:auto auto 0;max-height:94dvh;color:var(--ink)}
@@ -71,6 +70,9 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 .nowl::before{content:"Sekarang";position:absolute;left:0;top:-8px;padding:0 2px;font-size:9px;font-weight:700;color:#e11d48;background:#fff}
 #sb{border-left:10px solid var(--c)}.sbn{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nm{padding:8px 16px;border-radius:22px;color:#fff;font-weight:700;font-size:18px}
 [hidden]{display:none!important}
+.gp{display:flex;align-items:center;gap:10px;margin:10px 0;padding:10px 10px 10px 12px;background:var(--b);border-left:10px solid var(--c);border-radius:18px}
+.gp>div{flex:1;min-width:0}.gp>div>b{display:block;color:var(--c)}.gt{font-size:20px;font-weight:700}
+.gp button{flex:none;max-width:104px;padding:0 10px;line-height:1.2;background:#fff}
 button:disabled{opacity:.5;pointer-events:none}
 #ct{display:block;width:100%;min-height:50px;margin-top:10px;padding:10px 12px;border:2px solid transparent;border-radius:12px;background:#f3f7f8;color:var(--ink);font:inherit;line-height:1.4;resize:none;overflow:hidden}
 #cn.editing #ct{background:#fff;border-color:var(--pri)}
@@ -96,26 +98,26 @@ body.ed .bar{display:none}
   <button id="ce"></button>
   <div class="two" id="cx" hidden><button id="cb">Batal</button><button class="pri" id="cs">Simpan</button></div>
 </section>
-<section class="card" id="sc"></section>
+<section class="card" id="kr"></section>
 <nav class="bar"><button class="pri" id="bj">＋ Ambil jadwal jaga</button></nav>
 
 <dialog id="dj"><h2>Ambil jadwal jaga</h2>
   <label>Siapa kamu?</label><div class="opts" id="pn"></div>
   <label for="jd">Tanggal mulai jaga</label><input type="date" id="jd">
   <label>Pilih waktu jaga</label>
-  <div class="opts" id="ps"><button data-p="6-14">Pagi<br>06 sampai 14</button><button data-p="14-22">Siang<br>14 sampai 22</button><button data-p="22-6">Malam<br>22 sampai 06</button><button data-p="0-0">Sehari penuh<br>24 jam</button></div>
+  <div class="opts" id="ps"><button data-p="6-14">Pagi<br>06 - 14</button><button data-p="14-22">Siang<br>14 - 22</button><button data-p="22-6">Malam<br>22 - 06</button><button data-p="0-0">Sehari penuh<br>24 jam</button></div>
   <div class="two"><div><label for="js">Dari jam</label><select id="js"></select></div><div><label for="je">Sampai jam</label><select id="je"></select></div></div>
   <p class="sub" id="jp" style="margin-top:10px"></p>
   <div class="two"><button data-close>Batal</button><button class="pri" id="jok">Simpan jadwal</button></div>
 </dialog>
 
-<dialog id="dk"><h2>Jadwal kontrol dokter</h2><div id="kl"></div>
-  <label>Tambah jadwal kontrol</label>
+<dialog id="dk"><h2>Jadwal kontrol dan terapi</h2><div id="kl"></div>
+  <label>Tambah jadwal kontrol atau terapi</label>
   <div class="opts" id="kd"></div>
   <label for="kt">Tanggal</label><input type="date" id="kt">
   <label for="kj">Jam</label><input type="time" id="kj" value="09:00">
   <label for="kn">Catatan (contoh: bawa hasil CT scan)</label><input id="kn" maxlength="120">
-  <div class="two"><button data-close>Tutup</button><button class="pri" id="kok">Simpan kontrol</button></div>
+  <div class="two"><button data-close>Tutup</button><button class="pri" id="kok">Simpan Jadwal</button></div>
 </dialog>
 
 <script type="module">
@@ -163,7 +165,7 @@ function mv(n){view.setMonth(view.getMonth()+n);const m=ymd(view).slice(0,7);sel
 const dots=k=>Object.keys(NAMES).filter(n=>Object.values(S.slots[k]||{}).some(a=>a.includes(n))).map(n=>`<i style="background:${NAMES[n]}"></i>`).join('');
 function cal(){
   const y=view.getFullYear(),m=view.getMonth(),f=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
-  $('#lgd').innerHTML='<span>Titik = yang jaga:</span>'+Object.keys(NAMES).map(n=>`<span><i style="background:${NAMES[n]}"></i>${n}</span>`).join('');$('#mt').textContent=`${BLN[m]} ${y}`;
+  $('#lgd').innerHTML='<span>kode warna:</span>'+Object.keys(NAMES).map(n=>`<span><i style="background:${NAMES[n]}"></i>${n}</span>`).join('');$('#mt').textContent=`${BLN[m]} ${y}`;
   let h=['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(d=>`<div class="dow">${d}</div>`).join('')+'<div></div>'.repeat(f);
   for(let d=1;d<=n;d++){const k=`${y}-${pad(m+1)}-${pad(d)}`;
     h+=`<button class="day${k<today?' pd':''}${k==sel?' sel':''}${k==today?' today':''}" data-d="${k}"><b>${d}</b><span class="dots">${dots(k)}</span>${S.kontrol.some(c=>c.date==k)?'<small>🩺</small>':''}</button>`}
@@ -178,21 +180,26 @@ function tl(){
       ev+=`<button class="ev" style="top:${(i-st)*RH}px;height:${(e-i+1)*RH}px;--c:${NAMES[n]};--g:${NAMES[n]}2e" data-x="${i}|${n}"><b>Jaga</b><small>${pad(i)}-${pad(e+1)}</small></button>`;i=e}
     lanes+=`<div class="ln" data-lane="${n}" data-st="${st}">${ev}</div>`});
   const ks=S.kontrol.filter(c=>c.date==sel).map(c=>`<div class="kd">🩺 <b>Kontrol ${esc(kt(c.dokter).n)} jam ${esc(c.time)}</b>${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</div>`).join('');
-  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(sel<today?'<p class="sub">Hari ini sudah lewat, jadwalnya disembunyikan.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang di ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">Warna jam di kiri: hijau = sudah 2 orang atau lebih, kuning = kurang 1 orang, merah = belum ada. Ketuk ＋ untuk ikut jaga, ketuk kotak berwarna untuk membatalkan.${nowH>0?' Jam yang sudah lewat disembunyikan.':''}</p>`);
+  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(sel<today?'<p class="sub">Hari ini sudah lewat, jadwalnya disembunyikan.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang selama ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span><p class="sub">Tekan kotak berwarna untuk membatalkan atau tekan tombol + untuk tambah orang atau tekan pada jam kosong untuk ambil jam jaga.${nowH>0?' Jam yang sudah lewat disembunyikan.':''}</p>`);
   const g=`grid-template-columns:42px repeat(${names.length},minmax(0,1fr)) ${names.length?'46px':'1fr'}`;
-  $('#tl').innerHTML=N?`<div class="tgh" style="${g}"><div></div>${names.map(n=>`<div class="uh" style="--c:${NAMES[n]}">${n}</div>`).join('')}<button class="uh plus" data-add>${names.length?'＋':'＋ Ikut jaga'}</button></div><div class="tgb" style="height:${N*RH}px;${g}"><div>${hrs}</div>${lanes}<div class="ln" data-lane="+" data-st="${st}">${names.length?'':'<p class="sub" style="padding:8px">Belum ada yang jaga. Ketuk tombol ＋ di atas untuk menambah jadwal.</p>'}</div>${nowH>=0?`<div class="nowl" style="top:${new Date().getMinutes()/60*RH}px"></div>`:''}</div>`:'';
+  $('#tl').innerHTML=N?`<div class="tgh" style="${g}"><div></div>${names.map(n=>`<div class="uh" style="--c:${NAMES[n]}">${n}</div>`).join('')}<button class="uh plus" data-add>${names.length?'＋':'＋ Ikut jaga'}</button></div><div class="tgb" style="height:${N*RH}px;${g}"><div>${hrs}</div>${lanes}<div class="ln" data-lane="+" data-st="${st}">${names.length?'':'<p class="sub" style="padding:8px">Belum ada yang jaga. Tekan tombol ＋ di atas untuk menambah jadwal.</p>'}</div>${nowH>=0?`<div class="nowl" style="top:${new Date().getMinutes()/60*RH}px"></div>`:''}</div>`:'';
 }
-function sc(){
-  const t=Object.fromEntries(Object.keys(NAMES).map(n=>[n,0])),nh=new Date().getHours();
-  for(const[d,v]of Object.entries(S.slots))if(d>=today)for(const[h,a]of Object.entries(v))if(d>today||+h>=nh)a.forEach(n=>{if(n in t)t[n]++});
-  const mx=Math.max(1,...Object.values(t));
-  $('#sc').innerHTML='<h2>Sisa jam jaga</h2><p class="sub">Jam jaga yang masih akan dijalani, dihitung dari sekarang.</p>'+Object.entries(t).map(([n,v])=>`<div class="meter"><b style="color:${NAMES[n]}">${n}</b><div><i style="width:${v/mx*100}%;background:${NAMES[n]}"></i></div><span>${v?v+' jam':'belum ada'}</span></div>`).join('');
+function kr(){
+  const d=S.slots[sel]||{},st=sel<today?24:sel==today?new Date().getHours():0,g=[];
+  for(let h=st;h<24;h++){
+    const k=Math.min((d[h]||[]).length,2);if(k>1)continue;
+    const l=g[g.length-1];if(l&&l.k==k&&l.e==h)l.e=h+1;else g.push({k,s:h,e:h+1});
+  }
+  $('#kr').innerHTML='<h2>Jam yang butuh penjaga</h2><p class="sub">Kosong atau baru dijaga 1 orang, '+tgl(sel)+'.</p>'+
+    (sel<today?'<p class="sub" style="margin-top:10px">Tanggal ini sudah lewat.</p>':
+    g.length?g.map(x=>`<div class="gp ${['bd','wn'][x.k]}"><div><b>${x.k?'Dijaga 1 orang':'Kosong'}, ${x.e-x.s} jam</b><div class="gt">${pad(x.s)}:00 - ${pad(x.e%24)}:00</div></div><button data-g="${x.s}|${x.e}">Ambil jadwal</button></div>`).join(''):
+    '<span class="pill ok">Lengkap, semua jam sudah ada 2 orang</span>');
 }
 function kc(){
   const up=S.kontrol.filter(c=>c.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)),c=up[0],dd=c&&Math.round((parse(c.date)-parse(today))/864e5);
   const t=c&&kt(c.dokter);
   $('#kc').style.cssText=c?`--c:${t.c};--b:${t.b}`:'';
-  $('#kc').innerHTML=(c?`<span class="kic">${t.i}</span><b>Kontrol dokter berikutnya</b><div class="big">${esc(kt(c.dokter).n)}, ${dd?dd==1?'besok':dd+' hari lagi':'hari ini'}</div><p>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</p>`:'<b>Belum ada jadwal kontrol dokter</b>')+'<button data-k>Lihat Jadwal Kontrol</button>';
+  $('#kc').innerHTML=(c?`<span class="kic">${t.i}</span><b>Kontrol dan Terapi berikutnya</b><div class="big">${esc(kt(c.dokter).n)}, ${dd?dd==1?'besok':dd+' hari lagi':'hari ini'}</div><p>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</p>`:'<b>Belum ada jadwal kontrol dokter</b>')+'<button data-k>Lihat Semua Jadwal</button>';
   $('#kl').innerHTML=up.map(c=>{const t=kt(c.dokter),n=Math.round((parse(c.date)-parse(today))/864e5);return `<div class="kk" style="--c:${t.c};--b:${t.b}"><span class="kic">${t.i}</span><div class="kbd"><b>${esc(t.n)}</b><div class="kdt">${tgl(c.date)}</div><div class="kwr"><span class="kwh">${n?n==1?'Besok':n+' hari lagi':'Hari ini'}</span><b>Jam ${esc(c.time)}</b></div>${c.catatan?`<div class="kno">📝 ${esc(c.catatan)}</div>`:''}</div><button data-del="${esc(c.id)}" aria-label="Hapus">🗑</button></div>`}).join('')||'<p class="sub">Belum ada jadwal.</p>';
 }
 function sb(){
@@ -224,7 +231,7 @@ function watch(){
     q=>{const o={};q.forEach(d=>{const x=d.data().catatan;if(x)o[d.id]=x});S.catatan=o;nl=true;nerr=false;render()},
     ()=>{nl=true;nerr=true;render()});
 }
-function render(){watch();sb();cal();tl();kc();cn();sc()}
+function render(){watch();sb();cal();tl();kc();cn();kr()}
 
 const sH=$('#js'),eH=$('#je');
 sH.innerHTML=eH.innerHTML=Array.from({length:24},(_,h)=>`<option value="${h}">${pad(h)}:00</option>`).join('');
@@ -275,7 +282,7 @@ $('#cs').onclick=async()=>{
   b.disabled=false;ed=null;render();
 };
 document.addEventListener('click',async e=>{
-  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-add],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close]');if(!t)return;
+  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-add],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close],[data-g]');if(!t)return;
   const D=t.dataset;
   if('close' in D)t.closest('dialog').close();
   else if(D.d){sel=D.d;render()}
@@ -286,6 +293,7 @@ document.addEventListener('click',async e=>{
   }
   else if(D.lane){const r=t.getBoundingClientRect(),h=+D.st+Math.floor((e.clientY-r.top)/RH);pick='';openJ(h,(h+1)%24)}
   else if('add' in D){pick='';openJ()}
+  else if(D.g){const[s,e]=D.g.split('|').map(Number);openJ(s,e%24)}
   else if(D.p){[sH.value,eH.value]=D.p.split('-');paint()}
   else if(D.n){pick=D.n;paint()}
   else if(D.v){dok=D.v;paintK()}

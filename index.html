@@ -78,7 +78,9 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 .gp>div{flex:1;min-width:0}.gp>div>b{display:block;color:var(--c)}.gt{font-size:20px;font-weight:700}
 .gp button{flex:none;max-width:104px;padding:0 10px;line-height:1.2;background:#fff}
 button:disabled{opacity:.5;pointer-events:none}
-#tl.old{filter:grayscale(1);pointer-events:none}#tl.old .ev:disabled{opacity:1}
+#tl.old{filter:grayscale(1);pointer-events:none}.ev:disabled{opacity:1}
+.pst{position:absolute;left:0;right:0;top:0;z-index:4;backdrop-filter:grayscale(1);-webkit-backdrop-filter:grayscale(1)}
+.kd.old{filter:grayscale(1)}
 #ct{display:block;width:100%;min-height:50px;margin-top:10px;padding:10px 12px;border:2px solid transparent;border-radius:12px;background:#f3f7f8;color:var(--ink);font:inherit;line-height:1.4;resize:none;overflow:hidden}
 #cn.editing #ct{background:#fff;border-color:var(--pri)}
 #ce{width:100%;margin-top:10px}
@@ -190,18 +192,18 @@ function cal(){
   $('#cal').innerHTML=w.map((k,i)=>`<button class="day${k<today?' pd':''}${k==sel?' sel':''}${k==today?' today':''}" data-d="${k}" aria-pressed="${k==sel}"${k==today?' aria-current="date"':''}><span class="dow">${DW[i]}</span><b>${+k.slice(8)}</b><span class="dots">${dots(k)}</span>${S.kontrol.some(c=>c.date==k)?`<small>${mi('medical_services','Ada jadwal kontrol')}</small>`:''}</button>`).join('');
 }
 function tl(){
-  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1,old=sel<today,st=old?0:Math.max(nowH,0),N=24-st;
+  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1,old=sel<today,st=0,N=24-st,hm=pad(new Date().getHours())+':'+pad(new Date().getMinutes()),ny=(nowH+new Date().getMinutes()/60)*RH;
   const names=Object.keys(NAMES).filter(n=>Array.from({length:N},(_,k)=>d[st+k]).some(a=>a?.includes(n)));let low=0,hrs='',lanes='';
-  for(let i=st;i<24;i++){const k=Math.min((d[i]||[]).length,2);if(k<2)low++;hrs+=`<div class="tm ${['bd','wn','ok'][k]}">${pad(i)}:00</div>`}
+  for(let i=st;i<24;i++){const k=Math.min((d[i]||[]).length,2);if(k<2&&i>=nowH)low++;hrs+=`<div class="tm ${['bd','wn','ok'][k]}">${pad(i)}:00</div>`}
   names.forEach(n=>{let ev='';
     for(let i=st;i<24;i++){if(!d[i]?.includes(n))continue;let e=i;while(e<23&&d[e+1]?.includes(n))e++;
-      ev+=`<button class="ev" style="top:${(i-st)*RH}px;height:${(e-i+1)*RH}px;--c:${NAMES[n]};--g:${NAMES[n]}2e" data-x="${i}|${n}"${old?' disabled':''}><b>Jaga</b><small>${pad(i)}-${pad(e+1)}</small></button>`;i=e}
+      ev+=`<button class="ev" style="top:${(i-st)*RH}px;height:${(e-i+1)*RH}px;--c:${NAMES[n]};--g:${NAMES[n]}2e" data-x="${i}|${n}"${old||e<nowH?' disabled':''}><b>Jaga</b><small>${pad(i)}-${pad(e+1)}</small></button>`;i=e}
     lanes+=`<div class="ln" data-lane="${n}" data-st="${st}">${ev}</div>`});
-  const ks=S.kontrol.filter(c=>c.date==sel).map(c=>`<div class="kd">${mi('medical_services')} <b>Kontrol ${esc(kt(c.dokter).n)} jam ${esc(c.time)}</b>${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</div>`).join('');
-  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(old?'<p class="sub">Tanggal ini sudah lewat.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang selama ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">Tekan kotak berwarna untuk membatalkan.</p>`);
+  const ks=S.kontrol.filter(c=>c.date==sel).map(c=>`<div class="kd${old||sel==today&&c.time<hm?' old':''}">${mi('medical_services')} <b>Kontrol ${esc(kt(c.dokter).n)} jam ${esc(c.time)}</b>${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</div>`).join('');
+  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(old?`<p class="sub">Tanggal ini sudah lewat tidak bisa diubah.</p>${ks}`:`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang selama ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">Tombol ${mi('add')} untuk tambah orang atau tekan pada blok warna untuk membatalkan.${nowH>0?' Jam yang sudah lewat berwarna abu-abu.':''}</p>`);
   const g=`grid-template-columns:42px repeat(${names.length},minmax(0,1fr)) ${names.length?'46px':'1fr'}`;
   $('#tl').className=old?'old':'';
-  $('#tl').innerHTML=N?`<div class="tgh" style="${g}"><div></div>${names.map(n=>`<div class="uh" style="--c:${NAMES[n]}">${n}</div>`).join('')}<button class="uh plus" data-add aria-label="Ikut jaga"${old?' disabled':''}>${mi('add')}${names.length?'':' Ikut jaga'}</button></div><div class="tgb" style="height:${N*RH}px;${g}"><div>${hrs}</div>${lanes}<div class="ln" data-lane="+" data-st="${st}">${names.length?'':`<p class="sub" style="padding:8px">${old?'Tidak ada data jaga di tanggal ini.':`Belum ada yang jaga. Tekan tombol ${mi('add')} di atas untuk menambah jadwal.`}</p>`}</div>${nowH>=0?`<div class="nowl" style="top:${new Date().getMinutes()/60*RH}px"></div>`:''}</div>`:'';
+  $('#tl').innerHTML=N?`<div class="tgh" style="${g}"><div></div>${names.map(n=>`<div class="uh" style="--c:${NAMES[n]}">${n}</div>`).join('')}<button class="uh plus" data-add aria-label="Ikut jaga"${old?' disabled':''}>${mi('add')}</button></div><div class="tgb" style="height:${N*RH}px;${g}"><div>${hrs}</div>${lanes}<div class="ln" data-lane="+" data-st="${st}">${names.length?'':`<p class="sub" style="padding:8px">${old?'Tidak ada data jaga di tanggal ini.':`Belum ada yang jaga. Tekan tombol ${mi('add')} di atas untuk menambah jadwal.`}</p>`}</div>${nowH>=0?`<div class="pst" style="height:${ny}px"></div><div class="nowl" style="top:${ny}px"></div>`:''}</div>`:'';
 }
 function kr(){
   const d=S.slots[sel]||{},st=sel<today?24:sel==today?new Date().getHours():0,g=[];

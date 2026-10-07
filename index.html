@@ -24,16 +24,19 @@ button:active{border-bottom-width:2px;transform:translateY(4px);box-shadow:none}
 #kc .kic{position:absolute;top:14px;right:14px}
 #kc button{width:100%;margin-top:10px;background:#fff}
 .big{font-size:21px;font-weight:700;margin-top:4px}
-.ch{display:flex;align-items:center;justify-content:space-between}
-.ch button{width:52px;padding:0;font-size:26px}
-.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 5px;text-align:center;margin-top:10px}
-.dow{font-size:13px;color:var(--mut)}
-.day{position:relative;min-height:58px;padding:4px 0;background:#f3f7f8;border-radius:12px;font-weight:400}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ch h2{flex:1;text-align:center;line-height:1.2}
+.ch button{flex:none;width:52px;padding:0;font-size:26px}
+#cl{padding:16px 8px}.cw{padding:0 8px}#dh{margin-top:14px;padding:14px 8px 0;border-top:2px solid #e3ebee}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;margin-top:14px}
+.dow{display:block;font-size:13px;color:var(--mut)}
+.day{position:relative;min-height:80px;padding:6px 0 4px;background:#f3f7f8;border-radius:12px;font-weight:400}
+.day b{display:inline-block;margin-top:2px;font-size:18px}
 .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;margin-top:3px;padding:0 3px}.dots i{width:7px;height:7px;border-radius:50%}
 .lgd{display:flex;flex-wrap:wrap;gap:4px 10px}.lgd i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
 .day small{position:absolute;top:0;right:1px;font-size:11px}
 .day.sel{outline:3px solid var(--pri);background:#fff}
-.day.today b{background:var(--pri);color:#fff;border-radius:10px;padding:0 6px}
+.day.today b{background:var(--pri);color:#fff;border-radius:10px;padding:0 5px}
 .ok{--c:var(--ok);--b:var(--okb)}.wn{--c:var(--wn);--b:var(--wnb)}.bd{--c:var(--bd);--b:var(--bdb)}.pd{--c:#b6c3c8}.day.pd{opacity:.6}
 .lg{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px}
 .lg button{min-height:40px}
@@ -75,6 +78,7 @@ input,select{font:inherit;width:100%;min-height:50px;border:2px solid #c5d4d9;bo
 .gp>div{flex:1;min-width:0}.gp>div>b{display:block;color:var(--c)}.gt{font-size:20px;font-weight:700}
 .gp button{flex:none;max-width:104px;padding:0 10px;line-height:1.2;background:#fff}
 button:disabled{opacity:.5;pointer-events:none}
+#tl.old{filter:grayscale(1);pointer-events:none}#tl.old .ev:disabled{opacity:1}
 #ct{display:block;width:100%;min-height:50px;margin-top:10px;padding:10px 12px;border:2px solid transparent;border-radius:12px;background:#f3f7f8;color:var(--ink);font:inherit;line-height:1.4;resize:none;overflow:hidden}
 #cn.editing #ct{background:#fff;border-color:var(--pri)}
 #ce{width:100%;margin-top:10px}
@@ -87,7 +91,7 @@ body.ed .bar{display:none}
 .plus .mi{font-size:24px}.sub .mi{color:var(--pri)}
 .kic{color:#fff}.kic .mi{font-size:28px}
 #kd .mi{display:block;font-size:30px;margin-bottom:2px;color:var(--c)}#kd .on .mi{color:#fff}
-.day small{top:2px;right:2px;line-height:1}.day small .mi{font-size:16px;color:var(--pri)}
+.day small{top:-8px;right:-5px;z-index:1;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0b5d7340;line-height:1}.day small .mi{font-size:16px;color:var(--pri)}
 .kd .mi{font-size:22px;color:var(--wn)}.kno .mi{font-size:20px;color:var(--c)}
 .kk button .mi{font-size:26px;color:var(--bd)}
 </style>
@@ -97,12 +101,15 @@ body.ed .bar{display:none}
 <div id="mode" hidden>Mode contoh: Firebase belum diisi, data hanya tersimpan di HP ini. Isi file <b>firebase-config.js</b> agar jadwal terlihat oleh semua.</div>
 <section id="kc" class="card"></section>
 <section class="card" id="sb"></section>
-<section class="card">
-  <div class="ch"><button id="pv" aria-label="Bulan sebelumnya"><span class="mi" aria-hidden="true">chevron_left</span></button><h2 id="mt"></h2><button id="nx" aria-label="Bulan berikutnya"><span class="mi" aria-hidden="true">chevron_right</span></button></div>
+<section class="card" id="cl">
+ <div class="cw">
+  <div class="ch"><button id="pv" aria-label="Minggu sebelumnya"><span class="mi" aria-hidden="true">chevron_left</span></button><h2 id="mt"></h2><button id="nx" aria-label="Minggu berikutnya"><span class="mi" aria-hidden="true">chevron_right</span></button></div>
   <div class="grid" id="cal"></div>
   <div class="lg"><span class="sub lgd" id="lgd"></span><button id="td">Hari ini</button></div>
+ </div>
+ <div id="dh"></div>
+ <div id="tl"></div>
 </section>
-<section class="card" style="padding:16px 8px"><div id="dh" style="padding:0 8px"></div><div id="tl"></div></section>
 <section class="card" id="cn">
   <h2 id="cnh"></h2>
   <textarea id="ct" rows="1" maxlength="2000" aria-label="Catatan" readonly></textarea>
@@ -144,6 +151,7 @@ const KT={Saraf:{n:'Dokter Saraf',i:'neurology',c:'#4338CA',b:'#e6e5fb'},
   Fisioterapi:{n:'Fisioterapi',i:'physical_therapy',c:'#0F766E',b:'#d3f1ea'}};
 const kt=d=>KT[d=='Syaraf'?'Saraf':d]||{n:'Dokter '+d,i:'medical_services',c:'#0b5d73',b:'#e1ebee'};
 const HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],BLN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const DW=['Sen','Sel','Rab','Kam','Jum','Sab','Min'],BS=BLN.map(m=>m.slice(0,3));
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
 const mi=(n,l)=>`<span class="mi" ${l?`role="img" aria-label="${l}"`:'aria-hidden="true"'}>${n}</span>`;
 const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -151,8 +159,7 @@ const parse=s=>{const[a,b,c]=s.split('-');return new Date(a,b-1,c)};
 const tgl=s=>{const d=parse(s);return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]}`};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>`&#${c.charCodeAt(0)};`);
 const today=ymd(new Date());
-let S={slots:{},kontrol:[],catatan:{}},sel=today,view=parse(today),pick=localStorage.nama||'',dok='Saraf',cloud=false,db,F,unsub,ed=null,wm='',nl=true,nerr=false;
-view.setDate(1);
+let S={slots:{},kontrol:[],catatan:{}},sel=today,pick=localStorage.nama||'',dok='Saraf',cloud=false,db,F,unsub,ed=null,wm='',nl=true,nerr=false;
 const save=()=>localStorage.jagamamah=JSON.stringify(S);
 const cnt=(d,h)=>(S.slots[d]?.[h]||[]).length;
 const RH=56;
@@ -171,30 +178,30 @@ function range(date,s,e,name){
   return Promise.all([apply(date,A,name,true),apply(nd,B,name,true)]);
 }
 
-function go(date){sel=date;view=parse(date);view.setDate(1);render()}
-function mv(n){view.setMonth(view.getMonth()+n);const m=ymd(view).slice(0,7);sel=today.startsWith(m)?today:m+'-01';render()}
+const week=s=>{const d=parse(s);d.setDate(d.getDate()-(d.getDay()+6)%7);return Array.from({length:7},(_,i)=>{const x=new Date(d);x.setDate(d.getDate()+i);return ymd(x)})};
+function go(date){sel=date;render()}
+function mw(n){const d=parse(week(sel)[0]);d.setDate(d.getDate()+7*n);const w=week(ymd(d));sel=w.includes(today)?today:w[0];render()}
 
 const dots=k=>Object.keys(NAMES).filter(n=>Object.values(S.slots[k]||{}).some(a=>a.includes(n))).map(n=>`<i style="background:${NAMES[n]}"></i>`).join('');
 function cal(){
-  const y=view.getFullYear(),m=view.getMonth(),f=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
-  $('#lgd').innerHTML='<span>Pilih tanggal diatas untuk lihat yang jaga. </span>'+Object.keys(NAMES).map(n=>`<span><i style="background:${NAMES[n]}"></i>${n}</span>`).join('');$('#mt').textContent=`${BLN[m]} ${y}`;
-  let h=['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(d=>`<div class="dow">${d}</div>`).join('')+'<div></div>'.repeat(f);
-  for(let d=1;d<=n;d++){const k=`${y}-${pad(m+1)}-${pad(d)}`;
-    h+=`<button class="day${k<today?' pd':''}${k==sel?' sel':''}${k==today?' today':''}" data-d="${k}"><b>${d}</b><span class="dots">${dots(k)}</span>${S.kontrol.some(c=>c.date==k)?`<small>${mi('medical_services','Ada jadwal kontrol')}</small>`:''}</button>`}
-  $('#cal').innerHTML=h;
+  const w=week(sel),a=parse(w[0]),z=parse(w[6]),ma=a.getMonth(),mz=z.getMonth(),ya=a.getFullYear(),yz=z.getFullYear();
+  $('#lgd').innerHTML='<span>Pilih tanggal diatas. </span>'+Object.keys(NAMES).map(n=>`<span><i style="background:${NAMES[n]}"></i>${n}</span>`).join('');
+  $('#mt').textContent=ma==mz?`${BLN[ma]} ${ya}`:`${BS[ma]}${ya==yz?'':' '+ya} – ${BS[mz]} ${yz}`;
+  $('#cal').innerHTML=w.map((k,i)=>`<button class="day${k<today?' pd':''}${k==sel?' sel':''}${k==today?' today':''}" data-d="${k}" aria-pressed="${k==sel}"${k==today?' aria-current="date"':''}><span class="dow">${DW[i]}</span><b>${+k.slice(8)}</b><span class="dots">${dots(k)}</span>${S.kontrol.some(c=>c.date==k)?`<small>${mi('medical_services','Ada jadwal kontrol')}</small>`:''}</button>`).join('');
 }
 function tl(){
-  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1,st=sel<today?24:Math.max(nowH,0),N=24-st;
+  const d=S.slots[sel]||{},nowH=sel==today?new Date().getHours():-1,old=sel<today,st=old?0:Math.max(nowH,0),N=24-st;
   const names=Object.keys(NAMES).filter(n=>Array.from({length:N},(_,k)=>d[st+k]).some(a=>a?.includes(n)));let low=0,hrs='',lanes='';
   for(let i=st;i<24;i++){const k=Math.min((d[i]||[]).length,2);if(k<2)low++;hrs+=`<div class="tm ${['bd','wn','ok'][k]}">${pad(i)}:00</div>`}
   names.forEach(n=>{let ev='';
     for(let i=st;i<24;i++){if(!d[i]?.includes(n))continue;let e=i;while(e<23&&d[e+1]?.includes(n))e++;
-      ev+=`<button class="ev" style="top:${(i-st)*RH}px;height:${(e-i+1)*RH}px;--c:${NAMES[n]};--g:${NAMES[n]}2e" data-x="${i}|${n}"><b>Jaga</b><small>${pad(i)}-${pad(e+1)}</small></button>`;i=e}
+      ev+=`<button class="ev" style="top:${(i-st)*RH}px;height:${(e-i+1)*RH}px;--c:${NAMES[n]};--g:${NAMES[n]}2e" data-x="${i}|${n}"${old?' disabled':''}><b>Jaga</b><small>${pad(i)}-${pad(e+1)}</small></button>`;i=e}
     lanes+=`<div class="ln" data-lane="${n}" data-st="${st}">${ev}</div>`});
   const ks=S.kontrol.filter(c=>c.date==sel).map(c=>`<div class="kd">${mi('medical_services')} <b>Kontrol ${esc(kt(c.dokter).n)} jam ${esc(c.time)}</b>${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</div>`).join('');
-  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(sel<today?'<p class="sub">Hari ini sudah lewat, jadwalnya disembunyikan.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang selama ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">Tekan kotak berwarna untuk membatalkan atau tekan tombol ${mi('add')} untuk tambah orang atau tekan pada jam kosong untuk ambil jam jaga.${nowH>0?' Jam yang sudah lewat disembunyikan.':''}</p>`);
+  $('#dh').innerHTML=`<h2>${tgl(sel)}</h2>`+(old?'<p class="sub">Tanggal ini sudah lewat.</p>':`<span class="pill ${low?'wn':'ok'}">${low?`Masih kurang orang selama ${low} jam`:'Lengkap, semua jam sudah ada 2 orang'}</span>${ks}<p class="sub">Tekan kotak berwarna untuk membatalkan.':''}</p>`);
   const g=`grid-template-columns:42px repeat(${names.length},minmax(0,1fr)) ${names.length?'46px':'1fr'}`;
-  $('#tl').innerHTML=N?`<div class="tgh" style="${g}"><div></div>${names.map(n=>`<div class="uh" style="--c:${NAMES[n]}">${n}</div>`).join('')}<button class="uh plus" data-add aria-label="Ikut jaga">${mi('add')}${names.length?'':' Ikut jaga'}</button></div><div class="tgb" style="height:${N*RH}px;${g}"><div>${hrs}</div>${lanes}<div class="ln" data-lane="+" data-st="${st}">${names.length?'':`<p class="sub" style="padding:8px">Belum ada yang jaga. Tekan tombol ${mi('add')} di atas untuk menambah jadwal.</p>`}</div>${nowH>=0?`<div class="nowl" style="top:${new Date().getMinutes()/60*RH}px"></div>`:''}</div>`:'';
+  $('#tl').className=old?'old':'';
+  $('#tl').innerHTML=N?`<div class="tgh" style="${g}"><div></div>${names.map(n=>`<div class="uh" style="--c:${NAMES[n]}">${n}</div>`).join('')}<button class="uh plus" data-add aria-label="Ikut jaga"${old?' disabled':''}>${mi('add')}${names.length?'':' Ikut jaga'}</button></div><div class="tgb" style="height:${N*RH}px;${g}"><div>${hrs}</div>${lanes}<div class="ln" data-lane="+" data-st="${st}">${names.length?'':`<p class="sub" style="padding:8px">${old?'Tidak ada data jaga di tanggal ini.':`Belum ada yang jaga. Tekan tombol ${mi('add')} di atas untuk menambah jadwal.`}</p>`}</div>${nowH>=0?`<div class="nowl" style="top:${new Date().getMinutes()/60*RH}px"></div>`:''}</div>`:'';
 }
 function kr(){
   const d=S.slots[sel]||{},st=sel<today?24:sel==today?new Date().getHours():0,g=[];
@@ -237,10 +244,10 @@ function cn(){
 }
 function watch(){
   if(!cloud)return;
-  const m=ymd(view).slice(0,7);if(m==wm)return;
+  const m=sel.slice(0,7);if(m==wm)return;
   wm=m;nl=false;nerr=false;unsub?.();
   unsub=F.onSnapshot(F.query(F.collection(db,'jadwal'),F.where(F.documentId(),'>=',m+'-01'),F.where(F.documentId(),'<=',m+'-31')),
-    q=>{const o={};q.forEach(d=>{const x=d.data().catatan;if(x)o[d.id]=x});S.catatan=o;nl=true;nerr=false;render()},
+    q=>{const o={};q.forEach(d=>{const x=d.data().catatan;if(x)o[d.id]=x;S.slots[d.id]=d.data().slots||{}});S.catatan=o;nl=true;nerr=false;render()},
     ()=>{nl=true;nerr=true;render()});
 }
 function render(){watch();sb();cal();tl();kc();cn();kr()}
@@ -258,7 +265,7 @@ function openJ(s,e){if(s===undefined){s=sel==today?Math.min(new Date().getHours(
 const paintK=()=>$('#kd').innerHTML=Object.entries(KT).map(([k,t])=>`<button data-v="${k}" class="${k==dok?'on':''}" style="--c:${t.c}">${mi(t.i)}${t.n.replace('Dokter ','Dr. ')}</button>`).join('');
 
 $('#dj').addEventListener('change',paint);
-$('#pv').onclick=()=>mv(-1);$('#nx').onclick=()=>mv(1);
+$('#pv').onclick=()=>mw(-1);$('#nx').onclick=()=>mw(1);
 $('#td').onclick=()=>go(today);$('#bj').onclick=()=>openJ();
 $('#jok').onclick=async()=>{
   if(!pick)return alert('Pilih namamu dulu ya.');

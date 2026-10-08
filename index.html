@@ -23,6 +23,8 @@ button:active{border-bottom-width:2px;transform:translateY(4px);box-shadow:none}
 #kc>b,#kc .big{padding-right:60px}#kc .big{color:var(--c)}
 #kc .kic{position:absolute;top:14px;right:14px}
 #kc button{width:100%;margin-top:10px;background:#fff}
+#kc .two{margin-top:0}#kc .two button{padding:0 10px;line-height:1.2}#kc .pri{background:var(--c);color:#fff}
+#kc .two .pri{flex:none;width:auto;padding:0 20px;font-size:28px;line-height:1}
 .big{font-size:21px;font-weight:700;margin-top:4px}
 .ch{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .ch h2{flex:1;text-align:center;line-height:1.2}
@@ -132,12 +134,16 @@ body.ed .bar{display:none}
 </dialog>
 
 <dialog id="dk"><h2>Jadwal kontrol dan terapi</h2><div id="kl"></div>
-  <label>Tambah jadwal kontrol atau terapi</label>
+  <div class="two"><button data-close>Tutup</button></div>
+</dialog>
+
+<dialog id="da"><h2>Tambah jadwal kontrol atau terapi</h2>
+  <label>Pilih dokter atau terapi</label>
   <div class="opts" id="kd"></div>
   <label for="kt">Tanggal</label><input type="date" id="kt">
   <label for="kj">Jam</label><input type="time" id="kj" value="09:00">
   <label for="kn">Catatan (contoh: bawa hasil CT scan)</label><input id="kn" maxlength="120">
-  <div class="two"><button data-close>Tutup</button><button class="pri" id="kok">Simpan Jadwal</button></div>
+  <div class="two"><button data-close>Batal</button><button class="pri" id="kok">Simpan Jadwal</button></div>
 </dialog>
 
 <script type="module">
@@ -220,7 +226,7 @@ function kc(){
   const up=S.kontrol.filter(c=>c.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)),c=up[0],dd=c&&Math.round((parse(c.date)-parse(today))/864e5);
   const t=c&&kt(c.dokter);
   $('#kc').style.cssText=c?`--c:${t.c};--b:${t.b}`:'';
-  $('#kc').innerHTML=(c?`<span class="kic">${mi(t.i)}</span><b>Kontrol dan Terapi berikutnya</b><div class="big">${esc(kt(c.dokter).n)}, ${dd?dd==1?'besok':dd+' hari lagi':'hari ini'}</div><p>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</p>`:'<b>Belum ada jadwal kontrol dokter</b>')+'<button data-k>Lihat Semua Jadwal</button>';
+  $('#kc').innerHTML=(c?`<span class="kic">${mi(t.i)}</span><b>Kontrol dan Terapi berikutnya</b><div class="big">${esc(kt(c.dokter).n)}, ${dd?dd==1?'besok':dd+' hari lagi':'hari ini'}</div><p>${tgl(c.date)} jam ${esc(c.time)}${c.catatan?`<br>Catatan: ${esc(c.catatan)}`:''}</p>`:'<b>Belum ada jadwal kontrol dokter</b>')+'<div class="two"><button data-k>Lihat Semua Jadwal</button><button class="pri plus" data-ka aria-label="Tambah jadwal">+</button></div>';
   $('#kl').innerHTML=up.map(c=>{const t=kt(c.dokter),n=Math.round((parse(c.date)-parse(today))/864e5);return `<div class="kk" style="--c:${t.c};--b:${t.b}"><span class="kic">${mi(t.i)}</span><div class="kbd"><b>${esc(t.n)}</b><div class="kdt">${tgl(c.date)}</div><div class="kwr"><span class="kwh">${n?n==1?'Besok':n+' hari lagi':'Hari ini'}</span><b>Jam ${esc(c.time)}</b></div>${c.catatan?`<div class="kno">${mi('edit_note')} ${esc(c.catatan)}</div>`:''}</div><button data-del="${esc(c.id)}" aria-label="Hapus">${mi('delete')}</button></div>`}).join('')||'<p class="sub">Belum ada jadwal.</p>';
 }
 function sb(){
@@ -279,7 +285,7 @@ $('#kok').onclick=async()=>{
   const o={dokter:dok,date:$('#kt').value,time:$('#kj').value||'09:00',catatan:$('#kn').value.trim()};
   if(!o.date)return alert('Pilih tanggal kontrol dulu ya.');
   try{if(cloud)await F.addDoc(F.collection(db,'kontrol'),o);else{S.kontrol.push({id:Date.now()+'',...o});save()}}catch{return alert('Gagal menyimpan. Cek internet lalu coba lagi.')}
-  $('#kn').value='';go(o.date);$('#dk').close();
+  $('#kn').value='';go(o.date);$('#da').close();
 };
 $('#ct').addEventListener('input',grow);
 addEventListener('resize',grow);
@@ -303,7 +309,7 @@ $('#cs').onclick=async()=>{
   b.disabled=false;ed=null;render();
 };
 document.addEventListener('click',async e=>{
-  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-add],[data-h],[data-p],[data-n],[data-v],[data-k],[data-del],[data-close],[data-g]');if(!t)return;
+  const t=e.target.closest('[data-d],[data-x],[data-lane],[data-add],[data-h],[data-p],[data-n],[data-v],[data-k],[data-ka],[data-del],[data-close],[data-g]');if(!t)return;
   const D=t.dataset;
   if('close' in D)t.closest('dialog').close();
   else if(D.d){sel=D.d;render()}
@@ -318,7 +324,8 @@ document.addEventListener('click',async e=>{
   else if(D.p){[sH.value,eH.value]=D.p.split('-');paint()}
   else if(D.n){pick=D.n;paint()}
   else if(D.v){dok=D.v;paintK()}
-  else if('k' in D){$('#kt').min=today;$('#kt').value=sel<today?today:sel;paintK();$('#dk').showModal()}
+  else if('k' in D)$('#dk').showModal();
+  else if('ka' in D){$('#kt').min=today;$('#kt').value=sel<today?today:sel;paintK();$('#da').showModal()}
   else if(D.del&&confirm('Hapus jadwal kontrol ini?')){
     try{if(cloud)await F.deleteDoc(F.doc(db,'kontrol',D.del));else{S.kontrol=S.kontrol.filter(c=>c.id!=D.del);save();render()}}catch{alert('Gagal menghapus. Coba lagi.')}
   }
